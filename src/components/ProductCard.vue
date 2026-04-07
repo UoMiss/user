@@ -314,7 +314,7 @@ const getPriceObj = (amount: any) => {
   border-top-color: color-mix(in oklab, var(--ui-border) 62%, transparent);
 }
 
-:global(.dark) .product-card-shell {
+:global(.dark .product-card-shell) {
   background:
     linear-gradient(
       180deg,
@@ -327,21 +327,21 @@ const getPriceObj = (amount: any) => {
     0 22px 44px -32px rgba(0, 0, 0, 0.72);
 }
 
-:global(.dark) .product-card-shell-active:hover {
+:global(.dark .product-card-shell-active:hover) {
   border-color: color-mix(in oklab, var(--ui-border-strong) 82%, white 18%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     0 28px 50px -34px rgba(0, 0, 0, 0.82);
 }
 
-:global(.dark) .product-card-category {
+:global(.dark .product-card-category) {
   border-color: rgba(255, 255, 255, 0.12);
   background: color-mix(in oklab, var(--ui-bg-muted) 94%, black 6%);
   color: rgba(255, 255, 255, 0.94);
   backdrop-filter: none;
 }
 
-:global(.dark) .product-card-cta {
+:global(.dark .product-card-cta) {
   background: color-mix(in oklab, var(--ui-bg-muted) 92%, black 8%);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }

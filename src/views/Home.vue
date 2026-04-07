@@ -772,7 +772,7 @@ onUnmounted(() => {
     );
 }
 
-:global(.dark) .home-section-rule {
+:global(.dark .home-section-rule) {
   background:
     linear-gradient(
       90deg,
@@ -923,7 +923,7 @@ onUnmounted(() => {
   box-shadow: var(--ui-shadow-1);
 }
 
-:global(.dark) .home-latest-stream {
+:global(.dark .home-latest-stream) {
   background:
     linear-gradient(
       180deg,

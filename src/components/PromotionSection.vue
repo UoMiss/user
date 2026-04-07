@@ -680,27 +680,27 @@ const openProduct = (product: any) => {
   }
 }
 
-:global(.dark) #special_deals {
+:global(.dark #special_deals) {
   --background-color-L3: #0c1016;
   --body-background-color: #11161d;
   --text-color-promotion: #22c55e;
 }
 
-:global(.dark) .specialdeals {
+:global(.dark .specialdeals) {
   border: 1px solid rgba(148, 163, 184, 0.12);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.04),
     0 0.85rem 1.7rem -1.35rem rgba(0, 0, 0, 0.56);
 }
 
-:global(.dark) .specialdeals[data-hue] {
+:global(.dark .specialdeals[data-hue]) {
   --offset-s1: calc(var(--s) * 0.46);
   --offset-s2: calc(var(--s) * 0.5);
   --offset-l1: max(calc(var(--l) - 19%), 18%);
   --offset-l2: min(calc(var(--l) + 1%), 38%);
 }
 
-:global(.dark) .item {
+:global(.dark .item) {
   background-image:
     url('https://www.seagm.com/skin/images/art/gradient_bg-f5a8237834.svg'),
     linear-gradient(
@@ -711,11 +711,11 @@ const openProduct = (product: any) => {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
-:global(.dark) .item .name {
+:global(.dark .item .name) {
   opacity: 0.82;
 }
 
-:global(.dark) .promo {
+:global(.dark .promo) {
   color: rgba(241, 245, 249, 0.95);
   background:
     linear-gradient(
@@ -728,7 +728,7 @@ const openProduct = (product: any) => {
     inset 0 -1px 0 rgba(255, 255, 255, 0.02);
 }
 
-:global(.dark) .rate {
+:global(.dark .rate) {
   background:
     linear-gradient(
       180deg,
@@ -740,7 +740,7 @@ const openProduct = (product: any) => {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
-:global(.dark) .price {
+:global(.dark .price) {
   color: rgba(248, 250, 252, 0.96);
 }
 </style>
