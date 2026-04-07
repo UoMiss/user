@@ -10,7 +10,7 @@
     <button
       v-if="visible"
       @click="scrollToTop"
-      class="fixed bottom-20 right-6 lg:bottom-6 z-40 flex h-11 w-11 items-center justify-center rounded-full border theme-btn-neutral shadow-lg transition-all hover:shadow-xl hover:-translate-y-0.5 theme-safe-bottom"
+      class="back-to-top-button fixed right-4 lg:right-6 z-[45] flex h-11 w-11 items-center justify-center rounded-full border theme-btn-neutral shadow-lg transition-all hover:shadow-xl hover:-translate-y-0.5"
       :aria-label="t('common.backToTop')"
     >
       <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -21,10 +21,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRoute } from 'vue-router'
 
 const { t } = useI18n()
+const route = useRoute()
 const visible = ref(false)
 
 const onScroll = () => {
@@ -35,6 +37,38 @@ const scrollToTop = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-onMounted(() => window.addEventListener('scroll', onScroll, { passive: true }))
+const syncVisibilityAfterRouteChange = () => {
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      onScroll()
+    })
+  })
+}
+
+onMounted(() => {
+  onScroll()
+  window.addEventListener('scroll', onScroll, { passive: true })
+})
+
+watch(
+  () => route.fullPath,
+  async () => {
+    await nextTick()
+    syncVisibilityAfterRouteChange()
+  }
+)
+
 onUnmounted(() => window.removeEventListener('scroll', onScroll))
 </script>
+
+<style scoped>
+.back-to-top-button {
+  bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 1024px) {
+  .back-to-top-button {
+    bottom: 1.5rem;
+  }
+}
+</style>

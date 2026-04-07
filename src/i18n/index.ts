@@ -57,7 +57,9 @@ const messages = {
         },
         footer: {
             description: '专业的在线工作室，为您提供优质的产品和服务。',
-            quickLinks: '快速链接',
+            quickLinks: '站内导航',
+            legal: '法律信息',
+            toolbox: '快速链接',
             contact: '联系我们',
             rights: '保留所有权利',
             terms: '服务条款',
@@ -87,7 +89,12 @@ const messages = {
                 title: '精选商品',
                 description: '探索我们精心挑选的优质数字资产系列。',
                 empty: '暂无商品',
-                viewAll: '查看全部商品',
+                viewAll: 'More +',
+            },
+            promo: {
+                title: '促销商品',
+                description: '时间有限! 限时优惠等你来!',
+                viewMore: 'More +',
             },
             cta: {
                 title: '准备好开始了吗？',
@@ -97,6 +104,8 @@ const messages = {
             latest: {
                 title: '最新动态',
                 description: '随时掌握我们的最新消息和公告',
+                count: '{count} 篇内容',
+                moreEntries: '更多内容',
             },
         },
         products: {
@@ -1020,7 +1029,9 @@ const messages = {
         },
         footer: {
             description: '專業的線上工作室，為您提供優質的產品和服務。',
-            quickLinks: '快速連結',
+            quickLinks: '站內導航',
+            legal: '法律資訊',
+            toolbox: '快速連結',
             contact: '聯絡我們',
             rights: '保留所有權利',
             terms: '服務條款',
@@ -1050,7 +1061,12 @@ const messages = {
                 title: '精選商品',
                 description: '探索我們精心挑選的優質數位資產系列。',
                 empty: '暫無商品',
-                viewAll: '查看全部商品',
+                viewAll: 'More +',
+            },
+            promo: {
+                title: '促銷商品',
+                description: '時間有限! 限時優惠等你來!',
+                viewMore: 'More +',
             },
             cta: {
                 title: '準備好開始了嗎？',
@@ -1060,6 +1076,8 @@ const messages = {
             latest: {
                 title: '最新動態',
                 description: '隨時掌握我們的最新消息和公告',
+                count: '{count} 篇內容',
+                moreEntries: '更多內容',
             },
         },
         products: {
@@ -1983,7 +2001,9 @@ const messages = {
         },
         footer: {
             description: 'Professional online studio providing quality products and services.',
-            quickLinks: 'Quick Links',
+            quickLinks: 'Site Nav',
+            legal: 'Legal',
+            toolbox: 'Quick Links',
             contact: 'Contact Us',
             rights: 'All rights reserved',
             terms: 'Terms of Service',
@@ -2013,7 +2033,12 @@ const messages = {
                 title: 'Featured Products',
                 description: 'Discover our premium collection of digital assets, curated for excellence.',
                 empty: 'No products available',
-                viewAll: 'View All Products',
+                viewAll: 'More +',
+            },
+            promo: {
+                title: 'Promotion Picks',
+                description: 'Start with the current limited-time deals and discounted products highlighted for you.',
+                viewMore: 'More +',
             },
             cta: {
                 title: 'Ready to Start?',
@@ -2023,6 +2048,8 @@ const messages = {
             latest: {
                 title: 'Latest Updates',
                 description: 'Stay updated with our latest news and announcements',
+                count: '{count} posts',
+                moreEntries: 'More',
             },
         },
         products: {

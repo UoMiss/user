@@ -1,110 +1,161 @@
 <template>
   <footer
-    class="relative theme-panel-strong theme-text-secondary border-t theme-border overflow-hidden">
-    <div class="container mx-auto px-4 py-16 relative">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-16">
-        <!-- Brand -->
-        <div class="col-span-2 space-y-6">
-          <div class="flex items-center space-x-3">
-            <div
-              class="w-8 h-8 theme-btn-primary rounded-lg flex items-center justify-center">
-              <span class="text-white font-black text-sm">{{ brandInitial }}</span>
-            </div>
-            <h3 class="theme-text-primary text-xl font-bold tracking-tight">{{ brandSiteName }}</h3>
-          </div>
-          <p class="text-sm leading-relaxed max-w-sm theme-text-muted">
-            {{ brandDescription || t('footer.description') }}
-          </p>
-          <div class="flex space-x-4">
-            <!-- Social Icons (Placeholder) -->
-            <!--
-            <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 hover:text-white transition-colors">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
-            </a>
-            <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 hover:text-white transition-colors">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-            </a>
-            -->
-          </div>
-        </div>
-
-        <!-- Links -->
-        <div>
-          <h4 class="theme-text-primary font-bold mb-6 tracking-wide">{{ t('footer.quickLinks') }}</h4>
-          <ul class="space-y-3 text-sm">
-            <li v-for="item in quickLinks" :key="item.path">
-              <router-link :to="item.path" class="theme-link-muted transition-colors flex items-center gap-2 group">
-                <svg class="w-4 h-4 shrink-0 opacity-50 group-hover:opacity-80 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" :d="item.icon" />
-                </svg>
-                {{ t(item.label) }}
-              </router-link>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Contact -->
-        <div>
-          <h4 class="theme-text-primary font-bold mb-6 tracking-wide">{{ t('footer.contact') }}</h4>
+    class="relative theme-panel-strong theme-text-secondary border-t border-gray-200/50 dark:border-white/10 overflow-hidden">
+    <div class="container mx-auto px-4 py-10 lg:py-14">
+      <div class="grid grid-cols-1 gap-10 lg:grid-cols-4 lg:gap-8">
+        <div class="hidden lg:flex flex-col space-y-6 lg:col-span-1 lg:justify-between">
           <div class="space-y-4">
-            <a v-if="config?.contact?.telegram" :href="config.contact.telegram" target="_blank"
+            <router-link to="/" class="footer-brand group" :title="brandSiteName">
+              <img
+                src="/logo.svg"
+                :alt="brandSiteName"
+                class="footer-brand-logo"
+                loading="lazy"
+                decoding="async"
+              />
+              <h3 class="footer-brand-name">
+                {{ brandSiteName }}
+              </h3>
+            </router-link>
+            <p class="max-w-none text-sm leading-relaxed theme-text-muted lg:max-w-xs">
+              {{ brandDescription || t('footer.description') }}
+            </p>
+          </div>
+
+          <div class="hidden border-t border-dashed border-gray-200/60 pt-6 dark:border-white/10 lg:block">
+            <p class="text-xs font-medium opacity-50">&copy; {{ currentYear }} {{ brandSiteName }}. {{ t('footer.rights') }}</p>
+          </div>
+        </div>
+
+        <div :class="['grid gap-8 lg:col-span-2 lg:px-8', footerLinks.length ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-2']">
+          <div>
+            <h4 class="footer-section-title mb-5 lg:mb-6">{{ t('footer.quickLinks') }}</h4>
+            <ul class="space-y-2">
+              <li v-for="item in quickLinks" :key="item.path">
+                <router-link :to="item.path" class="footer-link-item group flex items-center gap-3 rounded-xl px-2.5 py-2.5 -mx-2 transition-all duration-200">
+                  <div class="footer-link-icon flex items-center justify-center theme-text-muted transition-colors group-hover:text-blue-500 dark:group-hover:text-blue-300">
+                    <svg class="footer-link-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.icon" />
+                    </svg>
+                  </div>
+                  <span class="footer-link-label theme-link-muted group-hover:theme-text-primary">{{ t(item.label) }}</span>
+                </router-link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="footer-section-title mb-5 lg:mb-6">{{ t('footer.legal') }}</h4>
+            <ul class="space-y-2">
+              <li>
+                <router-link to="/privacy" class="footer-link-item group flex items-center gap-3 rounded-xl px-2.5 py-2.5 -mx-2 transition-all duration-200">
+                  <div class="footer-link-icon flex items-center justify-center theme-text-muted transition-colors group-hover:text-emerald-500 dark:group-hover:text-emerald-300">
+                    <svg class="footer-link-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                  </div>
+                  <span class="footer-link-label theme-link-muted group-hover:theme-text-primary">{{ t('footer.privacy') }}</span>
+                </router-link>
+              </li>
+              <li>
+                <router-link to="/terms" class="footer-link-item group flex items-center gap-3 rounded-xl px-2.5 py-2.5 -mx-2 transition-all duration-200">
+                  <div class="footer-link-icon flex items-center justify-center theme-text-muted transition-colors group-hover:text-emerald-500 dark:group-hover:text-emerald-300">
+                    <svg class="footer-link-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <span class="footer-link-label theme-link-muted group-hover:theme-text-primary">{{ t('footer.terms') }}</span>
+                </router-link>
+              </li>
+              <li v-if="showAboutLink">
+                <router-link to="/about" class="footer-link-item group flex items-center gap-3 rounded-xl px-2.5 py-2.5 -mx-2 transition-all duration-200">
+                  <div class="footer-link-icon flex items-center justify-center theme-text-muted transition-colors group-hover:text-emerald-500 dark:group-hover:text-emerald-300">
+                    <svg class="footer-link-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <span class="footer-link-label theme-link-muted group-hover:theme-text-primary">{{ t('nav.about') }}</span>
+                </router-link>
+              </li>
+            </ul>
+          </div>
+
+          <div
+            v-if="footerLinks.length"
+            class="col-span-2 border-t border-dashed border-gray-200/60 pt-4 dark:border-white/10 sm:col-span-1 sm:border-none sm:pt-0"
+          >
+            <h4 class="footer-section-title mb-5 lg:mb-6">{{ t('footer.toolbox') }}</h4>
+            <ul class="grid grid-cols-2 gap-2 sm:grid-cols-1">
+              <li v-for="(link, index) in footerLinks" :key="link.url || `${link.name}-${index}`">
+                <component
+                  :is="link.url ? 'a' : 'div'"
+                  :href="link.url ? link.url : undefined"
+                  :target="link.url ? '_blank' : undefined"
+                  :rel="link.url ? 'noopener noreferrer' : undefined"
+                  class="footer-link-item group flex items-center gap-3 rounded-xl px-2.5 py-2.5 -mx-2 transition-all duration-200"
+                  :class="{ 'cursor-default': !link.url }"
+                >
+                  <div
+                    class="footer-link-icon footer-link-icon-letter flex shrink-0 items-center justify-center text-[11px] font-semibold leading-none theme-text-muted transition-colors group-hover:text-gray-900 dark:group-hover:text-white"
+                  >
+                    {{ getToolboxInitial(link.name) }}
+                  </div>
+                  <span class="footer-link-label theme-link-muted group-hover:theme-text-primary">{{ link.name }}</span>
+                </component>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="w-full space-y-4 lg:col-span-1 lg:ml-auto lg:max-w-[260px]">
+          <h4 class="footer-section-title mb-4 lg:mb-6">{{ t('footer.contact') }}</h4>
+
+          <div class="grid grid-cols-2 gap-3 lg:grid-cols-1">
+            <a
+              v-if="config?.contact?.telegram"
+              :href="config.contact.telegram"
+              target="_blank"
               rel="noopener noreferrer"
-              class="flex items-center space-x-3 text-sm hover:text-gray-900 dark:hover:text-white transition-colors p-3 rounded-lg bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 border border-gray-100 dark:border-white/5 hover:border-gray-200 dark:hover:border-white/10">
-              <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
-                <path
-                  d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z" />
+              class="footer-contact-card footer-contact-card-telegram group flex items-center justify-between rounded-2xl p-3.5"
+            >
+              <div class="flex items-center space-x-3">
+                <div class="footer-contact-platform-icon footer-contact-platform-icon-telegram flex items-center justify-center text-white transition-transform duration-200 group-hover:scale-105">
+                  <svg class="footer-contact-platform-glyph" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z" />
+                  </svg>
+                </div>
+                <span class="footer-contact-label theme-text-primary">Telegram</span>
+              </div>
+              <svg class="footer-contact-arrow footer-contact-arrow-telegram h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
-              <span>Telegram</span>
             </a>
-            <a v-if="config?.contact?.whatsapp" :href="config.contact.whatsapp" target="_blank"
+
+            <a
+              v-if="config?.contact?.whatsapp"
+              :href="config.contact.whatsapp"
+              target="_blank"
               rel="noopener noreferrer"
-              class="flex items-center space-x-3 text-sm hover:text-gray-900 dark:hover:text-white transition-colors p-3 rounded-lg bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 border border-gray-100 dark:border-white/5 hover:border-gray-200 dark:hover:border-white/10">
-              <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 24 24">
-                <path
-                  d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+              class="footer-contact-card footer-contact-card-whatsapp group flex items-center justify-between rounded-2xl p-3.5"
+            >
+              <div class="flex items-center space-x-3">
+                <div class="footer-contact-platform-icon footer-contact-platform-icon-whatsapp flex items-center justify-center text-white transition-transform duration-200 group-hover:scale-105">
+                  <svg class="footer-contact-platform-glyph footer-contact-platform-glyph-whatsapp" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                  </svg>
+                </div>
+                <span class="footer-contact-label theme-text-primary">WhatsApp</span>
+              </div>
+              <svg class="footer-contact-arrow footer-contact-arrow-whatsapp h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
-              <span>WhatsApp</span>
             </a>
           </div>
         </div>
       </div>
 
-      <!-- Copyright -->
-      <div
-        class="border-t theme-border pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs theme-text-muted">
-        <div class="space-y-1 text-center md:text-left">
-          <p>&copy; {{ currentYear }} {{ brandSiteName }}. {{ t('footer.rights') }}</p>
-          <p class="flex items-center justify-center gap-1 md:justify-start">
-            <span>Open Source: Dujiao-Next ·</span>
-            <a
-              href="https://github.com/dujiao-next"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-1 hover:text-gray-900 dark:hover:text-gray-400"
-            >
-              <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M12 .5C5.648.5.5 5.648.5 12c0 5.084 3.292 9.4 7.86 10.922.575.106.784-.25.784-.556 0-.273-.01-1-.016-1.962-3.197.694-3.872-1.54-3.872-1.54-.522-1.326-1.274-1.678-1.274-1.678-1.042-.713.079-.699.079-.699 1.152.081 1.758 1.183 1.758 1.183 1.024 1.755 2.688 1.248 3.343.954.104-.742.401-1.248.73-1.535-2.552-.29-5.236-1.276-5.236-5.678 0-1.254.448-2.28 1.182-3.084-.118-.29-.512-1.457.112-3.04 0 0 .964-.308 3.158 1.178a10.98 10.98 0 0 1 2.876-.387c.976.004 1.96.132 2.878.387 2.192-1.486 3.154-1.178 3.154-1.178.626 1.583.232 2.75.114 3.04.736.804 1.18 1.83 1.18 3.084 0 4.413-2.688 5.384-5.248 5.668.412.354.78 1.052.78 2.12 0 1.53-.014 2.764-.014 3.14 0 .31.206.668.79.554C20.212 21.396 23.5 17.083 23.5 12 23.5 5.648 18.352.5 12 .5Z" />
-              </svg>
-              <span>https://github.com/dujiao-next</span>
-            </a>
-          </p>
-        </div>
-        <div class="flex flex-col items-center gap-2 md:items-end">
-          <div class="flex flex-wrap items-center gap-x-4 gap-y-1 justify-center md:justify-end">
-            <router-link to="/privacy" class="hover:text-gray-900 dark:hover:text-gray-400">{{ t('footer.privacy') || 'Privacy Policy' }}</router-link>
-            <router-link to="/terms" class="hover:text-gray-900 dark:hover:text-gray-400">{{ t('footer.terms') || 'Terms of Service' }}</router-link>
-          </div>
-          <div v-if="footerLinks.length" class="flex flex-wrap items-center gap-x-4 gap-y-1 justify-center md:justify-end">
-            <a
-              v-for="link in footerLinks"
-              :key="link.name"
-              :href="link.url || 'javascript:void(0)'"
-              :target="link.url ? '_blank' : undefined"
-              rel="noopener noreferrer"
-              class="hover:text-gray-900 dark:hover:text-gray-400"
-            >{{ link.name }}</a>
-          </div>
-        </div>
+      <div class="mt-10 block border-t border-dashed border-gray-200/60 pt-6 text-center dark:border-white/10 lg:hidden">
+        <p class="text-xs font-medium opacity-50">&copy; {{ currentYear }} {{ brandSiteName }}. {{ t('footer.rights') }}</p>
       </div>
     </div>
   </footer>
@@ -114,6 +165,11 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '../stores/app'
+
+interface FooterLinkItem {
+  name: string
+  url?: string
+}
 
 const { t } = useI18n()
 const appStore = useAppStore()
@@ -134,10 +190,6 @@ const brandDescription = computed(() => {
   return ''
 })
 
-const brandInitial = computed(() => {
-  return brandSiteName.value.charAt(0).toUpperCase()
-})
-
 const isListMode = computed(() => config.value?.template_mode === 'list')
 const navConfig = computed(() => config.value?.nav_config as { builtin?: Record<string, boolean> } | undefined)
 
@@ -152,17 +204,300 @@ const quickLinks = computed(() => {
   if (!builtin || builtin.blog !== false) {
     items.push({ path: '/blog', label: 'nav.blog', icon: 'M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2' })
   }
-  if (!builtin || builtin.about !== false) {
-    items.push({ path: '/about', label: 'nav.about', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' })
-  }
   return items
 })
 
-const footerLinks = computed(() => {
+const showAboutLink = computed(() => {
+  const builtin = navConfig.value?.builtin
+  return !builtin || builtin.about !== false
+})
+
+const footerLinks = computed<FooterLinkItem[]>(() => {
   const links = config.value?.footer_links
   if (!Array.isArray(links)) return []
-  return links.filter((item: any) => item && typeof item.name === 'string' && item.name.trim())
+  return links.filter((item): item is FooterLinkItem => Boolean(item && typeof item.name === 'string' && item.name.trim()))
 })
+
+const getToolboxInitial = (name: string) => {
+  const trimmed = typeof name === 'string' ? name.trim() : ''
+  if (!trimmed) return '#'
+  const first = Array.from(trimmed)[0] || '#'
+  return /^[a-z]$/i.test(first) ? first.toUpperCase() : first
+}
 
 const currentYear = new Date().getFullYear()
 </script>
+
+<style scoped>
+.footer-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.5rem;
+  max-width: min(100%, 18rem);
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+
+.footer-brand:hover {
+  transform: translateY(-0.5px);
+  opacity: 0.98;
+}
+
+.footer-brand:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ui-focus-ring);
+  border-radius: 1rem;
+}
+
+.footer-brand-logo {
+  display: block;
+  width: 1.92rem;
+  height: 1.92rem;
+  flex-shrink: 0;
+  object-fit: contain;
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+
+.footer-brand:hover .footer-brand-logo {
+  transform: translateY(-0.5px) scale(1.01);
+  opacity: 0.96;
+}
+
+.footer-brand-name {
+  --footer-brand-name-gradient: linear-gradient(
+    180deg,
+    color-mix(in oklab, white 70%, var(--ui-text-primary) 30%) 0%,
+    color-mix(in oklab, white 36%, var(--ui-text-primary) 64%) 22%,
+    color-mix(in oklab, var(--ui-text-primary) 86%, white 14%) 54%,
+    color-mix(in oklab, var(--ui-text-primary) 94%, black 6%) 100%
+  );
+  --footer-brand-name-shadow: 0 1px 0 rgba(255, 255, 255, 0.12);
+  --footer-brand-name-stroke: 0.2px color-mix(in oklab, var(--ui-text-primary) 72%, black 28%);
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ui-text-primary);
+  font-size: clamp(1.02rem, 0.92rem + 0.28vw, 1.18rem);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  background-image: var(--footer-brand-name-gradient);
+  text-shadow: var(--footer-brand-name-shadow);
+  -webkit-text-stroke: var(--footer-brand-name-stroke);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+:global(.dark) .footer-brand-name {
+  --footer-brand-name-gradient: linear-gradient(
+    180deg,
+    color-mix(in oklab, white 94%, var(--ui-text-primary) 6%) 0%,
+    color-mix(in oklab, white 76%, var(--ui-text-primary) 24%) 20%,
+    color-mix(in oklab, white 52%, var(--ui-text-primary) 48%) 52%,
+    color-mix(in oklab, var(--ui-text-primary) 82%, white 18%) 100%
+  );
+  --footer-brand-name-shadow: 0 1px 0 rgba(255, 255, 255, 0.08), 0 8px 18px rgba(0, 0, 0, 0.18);
+  --footer-brand-name-stroke: 0.2px color-mix(in oklab, white 34%, var(--ui-text-primary) 66%);
+}
+
+.footer-section-title {
+  display: block;
+  color: var(--ui-text-primary);
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+.footer-link-item {
+  position: relative;
+  border: 1px solid transparent;
+  background: transparent;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.2s ease;
+}
+
+.footer-link-item:hover {
+  transform: translateY(-1px);
+  background: color-mix(in oklab, var(--ui-bg-soft) 82%, transparent);
+  border-color: color-mix(in oklab, var(--ui-border) 74%, transparent);
+  box-shadow: 0 14px 26px -28px rgba(15, 23, 42, 0.22);
+}
+
+:global(.dark) .footer-link-item:hover {
+  background: color-mix(in oklab, var(--ui-bg-overlay-strong) 88%, transparent);
+  border-color: color-mix(in oklab, var(--ui-border) 84%, white 16%);
+  box-shadow: 0 18px 30px -30px rgba(0, 0, 0, 0.5);
+}
+
+.footer-link-label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-decoration: none !important;
+}
+
+.footer-link-label:hover,
+.footer-link-label:focus-visible,
+.footer-link-item:hover .footer-link-label,
+.footer-link-item:focus-visible .footer-link-label {
+  text-decoration: none !important;
+}
+
+.footer-link-icon {
+  width: 1.62rem;
+  height: 1.62rem;
+  border-radius: 0.66rem;
+  backdrop-filter: blur(14px);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(248, 250, 252, 0.98)),
+    rgba(255, 255, 255, 0.9);
+  border: 1px solid color-mix(in oklab, var(--ui-border) 76%, white 24%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    0 10px 22px -20px rgba(15, 23, 42, 0.24);
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.footer-link-svg {
+  width: 0.76rem;
+  height: 0.76rem;
+  opacity: 0.84;
+}
+
+.footer-link-item:hover .footer-link-icon {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.88),
+    0 14px 24px -20px rgba(15, 23, 42, 0.2);
+}
+
+.footer-link-item:hover .footer-link-svg {
+  opacity: 0.96;
+}
+
+.footer-link-icon-letter {
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+:global(.dark) .footer-link-icon {
+  backdrop-filter: none;
+  background: var(--ui-bg-muted);
+  border-color: color-mix(in oklab, var(--ui-border) 84%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.02),
+    0 8px 18px -14px rgba(0, 0, 0, 0.42);
+}
+
+:global(.dark) .group:hover .footer-link-icon {
+  background: var(--ui-bg-soft);
+  border-color: color-mix(in oklab, var(--ui-border-strong) 78%, transparent);
+}
+
+.footer-contact-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in oklab, var(--ui-border) 82%, white 18%);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--ui-bg-elevated) 90%, white 10%),
+      color-mix(in oklab, var(--ui-bg-soft) 94%, transparent)
+    );
+  box-shadow: var(--ui-shadow-1);
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.footer-contact-card:hover {
+  transform: translateY(-1px);
+}
+
+:global(.dark) .footer-contact-card {
+  border-color: color-mix(in oklab, var(--ui-border) 88%, white 12%);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--ui-bg-elevated) 97%, black 3%),
+      color-mix(in oklab, var(--ui-bg-muted) 94%, black 6%)
+    );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    0 18px 30px -30px rgba(0, 0, 0, 0.46);
+}
+
+.footer-contact-card-telegram:hover {
+  border-color: color-mix(in oklab, rgb(59 130 246) 34%, var(--ui-border));
+  box-shadow: 0 18px 32px -28px rgba(59, 130, 246, 0.24);
+}
+
+.footer-contact-card-whatsapp:hover {
+  border-color: color-mix(in oklab, rgb(16 185 129) 34%, var(--ui-border));
+  box-shadow: 0 18px 32px -28px rgba(16, 185, 129, 0.24);
+}
+
+.footer-contact-platform-icon {
+  position: relative;
+  width: 1.88rem;
+  height: 1.88rem;
+  border-radius: 0.72rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 10px 18px -16px rgba(15, 23, 42, 0.36);
+}
+
+.footer-contact-platform-icon-telegram {
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 0.76));
+}
+
+.footer-contact-platform-icon-whatsapp {
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.88), rgba(5, 150, 105, 0.74));
+}
+
+.footer-contact-platform-glyph {
+  width: 0.84rem;
+  height: 0.84rem;
+}
+
+.footer-contact-platform-glyph-whatsapp {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.footer-contact-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.footer-contact-arrow {
+  opacity: 0.78;
+}
+
+.footer-contact-arrow-telegram {
+  color: rgba(96, 165, 250, 0.96);
+}
+
+.footer-contact-arrow-whatsapp {
+  color: rgba(52, 211, 153, 0.96);
+}
+</style>
