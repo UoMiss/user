@@ -6,11 +6,8 @@
     leave-active-class="transition duration-200 ease-in"
     leave-from-class="translate-y-0 opacity-100"
     leave-to-class="translate-y-full opacity-0">
-    <div
-      v-if="visible"
-      class="lg:hidden fixed left-0 right-0 z-50 theme-panel-strong backdrop-blur-xl border-t theme-border shadow-2xl"
-      :style="{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))' }"
-    >
+    <div v-if="visible"
+      class="lg:hidden fixed bottom-0 left-0 right-0 z-40 theme-panel-strong backdrop-blur-xl border-t theme-border shadow-2xl theme-safe-bottom">
       <div class="flex items-center gap-3 px-4 py-3">
         <!-- Price -->
         <div class="flex-1 min-w-0">
