@@ -3,12 +3,14 @@
     class="notice-page min-h-screen theme-page pt-20 pb-16">
     <div class="container mx-auto px-4">
       <!-- Page Header -->
-      <div class="mb-16 mt-12 text-center">
-        <h1 class="text-4xl md:text-6xl font-black mb-6 tracking-tight theme-text-primary">{{ t('nav.notice') }}</h1>
-        <p
-          class="theme-text-secondary max-w-2xl mx-auto text-lg leading-relaxed border-b theme-border pb-8">
-          {{ t('notice.subtitle') }}
-        </p>
+      <div class="theme-page-header">
+        <div class="theme-page-header-copy">
+          <h1 class="theme-section-heading theme-page-title">{{ t('nav.notice') }}</h1>
+          <p class="theme-page-subtitle">
+            {{ t('notice.subtitle') }}
+          </p>
+        </div>
+        <div class="theme-page-header-rule"></div>
       </div>
 
       <!-- Loading State -->
@@ -21,8 +23,13 @@
       <!-- Notices List -->
       <div v-else-if="notices.length > 0" class="max-w-4xl mx-auto space-y-4">
         <article v-for="notice in notices" :key="notice.id"
-          class="group theme-panel backdrop-blur-xl border rounded-2xl p-6 md:p-8 transition-all duration-300 hover:-translate-x-1 hover:shadow-md cursor-pointer flex items-center gap-6"
-          @click="goToNotice(notice.slug)">
+          class="notice-card group theme-panel backdrop-blur-xl border rounded-2xl p-6 md:p-8 transition-all duration-300 hover:-translate-x-1 hover:shadow-md cursor-pointer flex items-center gap-6"
+          role="link"
+          :tabindex="notice?.slug ? 0 : -1"
+          :aria-label="getLocalizedText(notice.title)"
+          @click="goToNotice(notice.slug)"
+          @keydown.enter.prevent="goToNotice(notice.slug)"
+          @keydown.space.prevent="goToNotice(notice.slug)">
           <!-- Icon Column -->
           <div
             class="hidden sm:flex flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden theme-surface-soft border theme-border items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform">
@@ -47,7 +54,7 @@
             </div>
 
             <h2
-              class="text-xl font-bold theme-text-primary group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate mb-1">
+              class="notice-card-title text-xl font-bold theme-text-primary group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate mb-1">
               {{ getLocalizedText(notice.title) }}
             </h2>
 
@@ -58,7 +65,7 @@
 
           <!-- Arrow -->
           <div
-            class="flex-shrink-0 theme-text-muted group-hover:text-gray-900 dark:group-hover:text-white transition-colors group-hover:translate-x-1 duration-300">
+            class="notice-card-arrow flex-shrink-0 theme-text-muted group-hover:text-gray-900 dark:group-hover:text-white transition-colors group-hover:translate-x-1 duration-300">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
@@ -114,6 +121,7 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '../stores/app'
 import { postAPI } from '../api'
+import type { LocalizedText, PublicPostLite } from '../api/types'
 import { getImageUrl } from '../utils/image'
 import { debounceAsync } from '../utils/debounce'
 
@@ -122,19 +130,21 @@ const { t } = useI18n()
 const appStore = useAppStore()
 
 const loading = ref(true)
-const notices = ref<any[]>([])
+const notices = ref<PublicPostLite[]>([])
 const currentPage = ref(1)
 const pageSize = ref(12)
 const total = ref(0)
 const totalPages = ref(0)
 
-const getLocalizedText = (jsonData: any) => {
+const getLocalizedText = (jsonData: LocalizedText) => {
   if (!jsonData) return ''
+  if (typeof jsonData === 'string') return jsonData
   const locale = appStore.locale
   return jsonData[locale] || jsonData['zh-CN'] || jsonData['en-US'] || ''
 }
 
-const formatDate = (dateString: string) => {
+const formatDate = (dateString?: string) => {
+  if (!dateString) return ''
   const date = new Date(dateString)
   return date.toLocaleDateString(appStore.locale, {
     year: 'numeric',
@@ -151,7 +161,7 @@ const loadNotices = async () => {
       page: currentPage.value,
       page_size: pageSize.value,
     })
-    notices.value = response.data.data || []
+    notices.value = (response.data.data || []) as PublicPostLite[]
     if (response.data.pagination) {
       total.value = response.data.pagination.total || 0
       totalPages.value = response.data.pagination.total_page || 0
@@ -165,7 +175,8 @@ const loadNotices = async () => {
 
 const debouncedLoadNotices = debounceAsync(loadNotices, 300)
 
-const goToNotice = (slug: string) => {
+const goToNotice = (slug?: string) => {
+  if (!slug) return
   router.push(`/blog/${slug}`) // 使用同一个详情页
 }
 
@@ -186,6 +197,39 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+.notice-card:focus-visible {
+  outline: none;
+  transform: translateX(-4px);
+  border-color: color-mix(in oklab, var(--ui-accent) 34%, var(--ui-border));
+  box-shadow:
+    0 0 0 3px color-mix(in oklab, var(--ui-accent) 16%, transparent),
+    0 12px 28px -20px rgba(15, 23, 42, 0.24);
+}
+
+.notice-card:focus-visible .notice-card-title {
+  color: rgb(37 99 235);
+}
+
+.notice-card:focus-visible .notice-card-arrow {
+  color: rgb(17 24 39);
+  transform: translateX(4px);
+}
+
+:global(.dark .notice-card:focus-visible) {
+  border-color: color-mix(in oklab, var(--ui-accent) 42%, var(--ui-border));
+  box-shadow:
+    0 0 0 3px color-mix(in oklab, var(--ui-accent) 22%, transparent),
+    0 18px 34px -24px rgba(0, 0, 0, 0.52);
+}
+
+:global(.dark .notice-card:focus-visible .notice-card-title) {
+  color: rgb(96 165 250);
+}
+
+:global(.dark .notice-card:focus-visible .notice-card-arrow) {
+  color: rgb(255 255 255);
+}
+
 .line-clamp-1 {
   overflow: hidden;
   display: -webkit-box;

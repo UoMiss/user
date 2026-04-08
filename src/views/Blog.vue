@@ -3,12 +3,14 @@
     class="blog-page min-h-screen theme-page pt-20 pb-16 relative overflow-hidden">
     <div class="container mx-auto px-4 relative z-10">
       <!-- Page Header -->
-      <div class="mb-16 mt-12 text-center">
-        <h1 class="text-4xl md:text-6xl font-black mb-6 tracking-tight theme-text-primary">{{ t('nav.blog') }}</h1>
-        <p
-          class="theme-text-secondary max-w-2xl mx-auto text-lg leading-relaxed border-b theme-border pb-8">
-          {{ t('blog.subtitle') }}
-        </p>
+      <div class="theme-page-header">
+        <div class="theme-page-header-copy">
+          <h1 class="theme-section-heading theme-page-title">{{ t('nav.blog') }}</h1>
+          <p class="theme-page-subtitle">
+            {{ t('blog.subtitle') }}
+          </p>
+        </div>
+        <div class="theme-page-header-rule"></div>
       </div>
 
       <!-- Loading State -->
@@ -22,8 +24,13 @@
       <div v-else-if="posts.length > 0">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <article v-for="post in posts" :key="post.id"
-            class="group theme-panel backdrop-blur-xl border rounded-2xl overflow-hidden hover:bg-gray-50 dark:hover:bg-white/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer flex flex-col"
-            @click="goToPost(post.slug)">
+            class="blog-card group theme-panel backdrop-blur-xl border rounded-2xl overflow-hidden hover:bg-gray-50 dark:hover:bg-white/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl cursor-pointer flex flex-col"
+            role="link"
+            :tabindex="post?.slug ? 0 : -1"
+            :aria-label="getLocalizedText(post.title)"
+            @click="goToPost(post.slug)"
+            @keydown.enter.prevent="goToPost(post.slug)"
+            @keydown.space.prevent="goToPost(post.slug)">
             <!-- Thumbnail -->
             <div v-if="post.thumbnail" class="h-48 overflow-hidden relative">
               <img :src="getImageUrl(post.thumbnail)" :alt="getLocalizedText(post.title)"
@@ -45,7 +52,7 @@
               </div>
 
               <h2
-                class="text-2xl font-bold mb-4 theme-text-primary transition-colors line-clamp-2 leading-tight">
+                class="blog-card-title text-2xl font-bold mb-4 theme-text-primary transition-colors line-clamp-2 leading-tight">
                 {{ getLocalizedText(post.title) }}
               </h2>
 
@@ -54,7 +61,7 @@
               </p>
 
               <div
-                class="flex items-center text-sm font-medium theme-text-muted group-hover:text-gray-900 dark:group-hover:text-white transition-colors mt-auto pt-6 border-t theme-border">
+                class="blog-card-footer flex items-center text-sm font-medium theme-text-muted group-hover:text-gray-900 dark:group-hover:text-white transition-colors mt-auto pt-6 border-t theme-border">
                 {{ t('blog.readMore') }}
                 <svg class="w-4 h-4 ml-2 transition-transform group-hover:translate-x-2" fill="none"
                   stroke="currentColor" viewBox="0 0 24 24">
@@ -114,6 +121,7 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '../stores/app'
 import { postAPI } from '../api'
+import type { LocalizedText, PublicPostLite } from '../api/types'
 import { getImageUrl } from '../utils/image'
 import { debounceAsync } from '../utils/debounce'
 
@@ -122,19 +130,21 @@ const { t } = useI18n()
 const appStore = useAppStore()
 
 const loading = ref(true)
-const posts = ref<any[]>([])
+const posts = ref<PublicPostLite[]>([])
 const currentPage = ref(1)
 const pageSize = ref(12)
 const total = ref(0)
 const totalPages = ref(0)
 
-const getLocalizedText = (jsonData: any) => {
+const getLocalizedText = (jsonData: LocalizedText) => {
   if (!jsonData) return ''
+  if (typeof jsonData === 'string') return jsonData
   const locale = appStore.locale
   return jsonData[locale] || jsonData['zh-CN'] || jsonData['en-US'] || ''
 }
 
-const formatDate = (dateString: string) => {
+const formatDate = (dateString?: string) => {
+  if (!dateString) return ''
   const date = new Date(dateString)
   return date.toLocaleDateString(appStore.locale, {
     year: 'numeric',
@@ -151,7 +161,7 @@ const loadPosts = async () => {
       page: currentPage.value,
       page_size: pageSize.value,
     })
-    posts.value = response.data.data || []
+    posts.value = (response.data.data || []) as PublicPostLite[]
     if (response.data.pagination) {
       total.value = response.data.pagination.total || 0
       totalPages.value = response.data.pagination.total_page || 0
@@ -165,7 +175,8 @@ const loadPosts = async () => {
 
 const debouncedLoadPosts = debounceAsync(loadPosts, 300)
 
-const goToPost = (slug: string) => {
+const goToPost = (slug?: string) => {
+  if (!slug) return
   router.push(`/blog/${slug}`)
 }
 
@@ -186,6 +197,36 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+.blog-card:focus-visible {
+  outline: none;
+  transform: translateY(-4px);
+  border-color: color-mix(in oklab, var(--ui-accent) 34%, var(--ui-border));
+  box-shadow:
+    0 0 0 3px color-mix(in oklab, var(--ui-accent) 16%, transparent),
+    0 18px 34px -24px rgba(15, 23, 42, 0.24);
+}
+
+.blog-card:focus-visible .blog-card-title,
+.blog-card:focus-visible .blog-card-footer {
+  color: rgb(17 24 39);
+}
+
+.blog-card:focus-visible .blog-card-footer svg {
+  transform: translateX(0.5rem);
+}
+
+:global(.dark .blog-card:focus-visible) {
+  border-color: color-mix(in oklab, var(--ui-accent) 42%, var(--ui-border));
+  box-shadow:
+    0 0 0 3px color-mix(in oklab, var(--ui-accent) 22%, transparent),
+    0 22px 38px -28px rgba(0, 0, 0, 0.52);
+}
+
+:global(.dark .blog-card:focus-visible .blog-card-title),
+:global(.dark .blog-card:focus-visible .blog-card-footer) {
+  color: rgb(255 255 255);
+}
+
 .line-clamp-2 {
   overflow: hidden;
   display: -webkit-box;

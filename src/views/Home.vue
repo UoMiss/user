@@ -4,7 +4,7 @@
     <!-- ==================== LIST MODE ==================== -->
     <template v-if="templateMode === 'list'">
       <!-- Hero Banner (shared with card mode) -->
-      <section v-if="showHeroSection" class="relative z-10 border-b theme-border pt-24 pb-10">
+      <section v-if="showHeroSection" class="relative z-10 pt-24 pb-10">
         <div class="container max-w-7xl mx-auto px-4">
           <div class="relative overflow-hidden rounded-2xl border theme-panel"
             @touchstart="onBannerTouchStart"
@@ -13,47 +13,45 @@
               <img v-if="!bannerLoading && heroImage" :src="heroImage" :key="heroImage" class="absolute inset-0 h-full w-full object-cover" />
             </Transition>
             <div class="absolute inset-0 bg-black/50"></div>
-            <div v-if="bannerLoading" class="relative flex min-h-[200px] flex-col justify-between p-5 sm:min-h-[240px] sm:p-6 md:min-h-[320px] md:p-10">
+            <div v-if="bannerLoading" class="relative flex min-h-[160px] flex-col justify-between p-5 sm:min-h-[240px] sm:p-6 md:min-h-[320px] md:p-10">
               <div class="space-y-3">
                 <div class="h-5 w-24 theme-skeleton rounded-full" style="background: rgba(255,255,255,0.35)"></div>
-                <div class="h-8 max-w-3xl theme-skeleton rounded-xl md:h-10" style="background: rgba(255,255,255,0.35)"></div>
                 <div class="h-4 max-w-2xl theme-skeleton rounded-lg" style="background: rgba(255,255,255,0.3)"></div>
               </div>
             </div>
-            <div v-else class="relative flex min-h-[200px] flex-col justify-between p-5 sm:min-h-[240px] sm:p-6 md:min-h-[320px] md:p-10">
-              <div v-if="bannerCount > 1" class="mb-3 flex items-center justify-end gap-2">
+            <div v-else class="relative flex min-h-[160px] flex-col justify-between p-5 sm:min-h-[240px] sm:p-6 md:min-h-[320px] md:p-10">
+              <div v-if="bannerCount > 1" class="pointer-events-none absolute inset-y-0 left-0 right-0 z-10 flex items-center justify-between px-3 sm:px-4 md:px-5">
                 <button type="button"
-                  class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white transition hover:bg-black/35 md:h-9 md:w-9"
+                  class="pointer-events-auto inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white shadow-[0_10px_30px_-18px_rgba(0,0,0,0.8)] backdrop-blur-sm transition hover:bg-black/35 md:h-9 md:w-9"
                   @click="handlePrevHeroBanner" :aria-label="t('common.previousBanner')">
                   <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
                 <button type="button"
-                  class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white transition hover:bg-black/35 md:h-9 md:w-9"
+                  class="pointer-events-auto inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white shadow-[0_10px_30px_-18px_rgba(0,0,0,0.8)] backdrop-blur-sm transition hover:bg-black/35 md:h-9 md:w-9"
                   @click="handleNextHeroBanner" :aria-label="t('common.nextBanner')">
                   <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
               </div>
-              <div class="space-y-2 sm:space-y-3">
-                <span class="theme-badge theme-badge-inverse gap-2 text-xs font-semibold uppercase tracking-wider">
+              <div class="pointer-events-none absolute left-1/2 top-5 z-10 -translate-x-1/2 sm:top-6 md:top-8">
+                <span class="theme-badge theme-badge-inverse gap-2 text-xs font-semibold uppercase tracking-wider shadow-[0_10px_24px_-18px_rgba(0,0,0,0.8)]">
                   <span class="h-2 w-2 rounded-full bg-emerald-300"></span>
                   {{ heroBadge }}
                 </span>
-                <h1 class="max-w-4xl text-xl font-semibold tracking-[-0.02em] text-white sm:text-2xl md:text-3xl">
-                  {{ heroTitle }}
-                </h1>
-                <p class="max-w-3xl text-xs leading-relaxed text-gray-100 sm:text-sm">
+              </div>
+              <div class="mt-auto home-hero-bottom-stack">
+                <div v-if="bannerCount > 1" class="flex items-center justify-center gap-2">
+                  <button v-for="(_, bIdx) in banners" :key="`list-dot-${bIdx}`" type="button"
+                    class="h-2 rounded-full transition-all"
+                    :class="bIdx === currentBannerIndex ? 'w-6 bg-white' : 'w-2 bg-white/45 hover:bg-white/70'"
+                    @click="selectHeroBanner(bIdx)"></button>
+                </div>
+                <p class="home-hero-subtitle-bottom max-w-3xl text-xs leading-relaxed text-gray-100 sm:text-sm">
                   {{ heroSubtitle }}
                 </p>
-              </div>
-              <div v-if="bannerCount > 1" class="mt-4 flex items-center gap-2">
-                <button v-for="(_, bIdx) in banners" :key="`list-dot-${bIdx}`" type="button"
-                  class="h-2 rounded-full transition-all"
-                  :class="bIdx === currentBannerIndex ? 'w-6 bg-white' : 'w-2 bg-white/45 hover:bg-white/70'"
-                  @click="selectHeroBanner(bIdx)"></button>
               </div>
             </div>
           </div>
@@ -176,8 +174,8 @@
 
     <!-- ==================== CARD MODE (default) ==================== -->
     <template v-else>
-    <section v-if="showHeroSection" class="relative z-10 border-b theme-border pt-24 pb-10">
-      <div class="container max-w-7xl mx-auto px-4 sm:px-6">
+    <section v-if="showHeroSection" class="relative z-10 pt-24 pb-10">
+      <div class="container max-w-7xl mx-auto px-4">
         <div class="relative overflow-hidden rounded-2xl border theme-panel"
           @touchstart="onBannerTouchStart"
           @touchend="onBannerTouchEnd">
@@ -187,7 +185,7 @@
           </Transition>
           <div class="absolute inset-0 bg-black/50"></div>
 
-            <div v-if="bannerLoading" class="relative flex min-h-[260px] flex-col justify-between p-5 sm:min-h-[320px] sm:p-6 md:min-h-[420px] md:p-12">
+            <div v-if="bannerLoading" class="relative flex min-h-[208px] flex-col justify-between p-5 sm:min-h-[320px] sm:p-6 md:min-h-[420px]">
             <div class="mb-4 flex items-center justify-end">
               <span class="theme-badge theme-badge-inverse text-xs font-medium">
                 {{ t('common.loading') }}
@@ -196,21 +194,15 @@
 
             <div class="space-y-4">
               <div class="h-6 w-28 theme-skeleton rounded-full" style="background: rgba(255,255,255,0.35)"></div>
-              <div class="h-10 max-w-4xl theme-skeleton rounded-xl md:h-14" style="background: rgba(255,255,255,0.35)"></div>
               <div class="h-5 max-w-3xl theme-skeleton rounded-lg" style="background: rgba(255,255,255,0.3)"></div>
-            </div>
-
-            <div class="flex flex-wrap items-center gap-3 pt-6">
-              <div class="h-11 w-36 theme-skeleton rounded-lg" style="background: rgba(255,255,255,0.35)"></div>
-              <div class="h-11 w-28 theme-skeleton rounded-lg" style="background: rgba(255,255,255,0.25)"></div>
             </div>
           </div>
 
-          <div v-else class="relative flex min-h-[260px] flex-col justify-between p-5 sm:min-h-[320px] sm:p-6 md:min-h-[420px] md:p-12">
-            <div v-if="bannerCount > 1" class="mb-4 flex items-center justify-end gap-2">
+          <div v-else class="relative flex min-h-[208px] flex-col justify-between p-5 sm:min-h-[320px] sm:p-6 md:min-h-[420px]">
+            <div v-if="bannerCount > 1" class="pointer-events-none absolute inset-y-0 left-0 right-0 z-10 flex items-center justify-between px-3 sm:px-4 md:px-5">
               <button
                 type="button"
-                class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white transition hover:bg-black/35 md:h-10 md:w-10"
+                class="pointer-events-auto inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white shadow-[0_12px_34px_-20px_rgba(0,0,0,0.8)] backdrop-blur-sm transition hover:bg-black/35 md:h-10 md:w-10"
                 @click="handlePrevHeroBanner"
                 :aria-label="t('common.previousBanner')"
               >
@@ -220,7 +212,7 @@
               </button>
               <button
                 type="button"
-                class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white transition hover:bg-black/35 md:h-10 md:w-10"
+                class="pointer-events-auto inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-black/20 text-white shadow-[0_12px_34px_-20px_rgba(0,0,0,0.8)] backdrop-blur-sm transition hover:bg-black/35 md:h-10 md:w-10"
                 @click="handleNextHeroBanner"
                 :aria-label="t('common.nextBanner')"
               >
@@ -230,49 +222,28 @@
               </button>
             </div>
 
-            <div class="space-y-3 sm:space-y-4">
-              <span class="theme-badge theme-badge-inverse gap-2 text-xs font-semibold uppercase tracking-wider">
+            <div class="pointer-events-none absolute left-1/2 top-5 z-10 -translate-x-1/2 sm:top-6 md:top-8">
+              <span class="theme-badge theme-badge-inverse gap-2 text-xs font-semibold uppercase tracking-wider shadow-[0_10px_24px_-18px_rgba(0,0,0,0.8)]">
                 <span class="h-2 w-2 rounded-full bg-emerald-300"></span>
                 {{ heroBadge }}
               </span>
-              <h1 class="max-w-4xl text-2xl font-semibold tracking-[-0.02em] text-white sm:text-3xl md:text-[2.85rem]">
-                {{ heroTitle }}
-              </h1>
-              <p class="max-w-3xl text-xs leading-relaxed text-gray-100 sm:text-sm md:text-base">
+            </div>
+
+            <div class="mt-auto home-hero-bottom-stack home-hero-bottom-stack-card">
+              <div v-if="bannerCount > 1" class="flex items-center justify-center gap-2">
+                <button
+                  v-for="(_, index) in banners"
+                  :key="`hero-dot-${index}`"
+                  type="button"
+                  class="h-2.5 rounded-full transition-all"
+                  :class="index === currentBannerIndex ? 'w-7 bg-white' : 'w-2.5 bg-white/45 hover:bg-white/70'"
+                  @click="selectHeroBanner(index)"
+                  :aria-label="t('common.switchBanner', { n: index + 1 })"
+                ></button>
+              </div>
+              <p class="home-hero-subtitle-bottom home-hero-subtitle-bottom-card max-w-3xl text-xs leading-relaxed text-gray-100 sm:text-sm md:text-base">
                 {{ heroSubtitle }}
               </p>
-            </div>
-
-            <div class="flex flex-wrap items-center gap-3 pt-5 sm:pt-6">
-              <button
-                type="button"
-                @click="goToHeroLink"
-                class="inline-flex min-h-[40px] items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 transition hover:scale-105 sm:min-h-[44px] sm:px-5 sm:py-3"
-              >
-                {{ heroPrimaryButtonText }}
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </button>
-              <router-link
-                v-if="!hasHeroLink"
-                to="/products"
-                class="inline-flex min-h-[40px] items-center rounded-lg border border-white/30 px-4 py-2.5 text-sm font-medium text-white transition hover:border-white hover:bg-white/10 sm:min-h-[44px] sm:px-5 sm:py-3"
-              >
-                {{ t('home.featured.viewAll') }}
-              </router-link>
-            </div>
-
-            <div v-if="bannerCount > 1" class="mt-5 flex items-center gap-2">
-              <button
-                v-for="(_, index) in banners"
-                :key="`hero-dot-${index}`"
-                type="button"
-                class="h-2.5 rounded-full transition-all"
-                :class="index === currentBannerIndex ? 'w-7 bg-white' : 'w-2.5 bg-white/45 hover:bg-white/70'"
-                @click="selectHeroBanner(index)"
-                :aria-label="t('common.switchBanner', { n: index + 1 })"
-              ></button>
             </div>
           </div>
         </div>
@@ -283,7 +254,7 @@
       v-if="promoProducts.length > 0"
       id="promotion"
       class="relative z-10 pb-14"
-      :class="showHeroSection ? 'pt-14' : 'pt-32 md:pt-36'"
+      :class="showHeroSection ? 'pt-4 md:pt-8' : 'pt-32 md:pt-36'"
     >
       <div class="container max-w-7xl mx-auto px-4">
         <div class="home-section-header home-section-header-promo mb-6">
@@ -293,7 +264,6 @@
               <p class="home-section-description">{{ t('home.promo.description') }}</p>
             </div>
           <router-link
-            v-if="!hasHeroLink"
             to="/products"
             class="home-section-action"
           >
@@ -323,7 +293,6 @@
               <p class="home-section-description">{{ t('home.featured.description') }}</p>
             </div>
             <router-link
-              v-if="!hasHeroLink"
               to="/products"
               class="home-section-action"
             >
@@ -333,7 +302,7 @@
           <div class="home-section-rule"></div>
         </div>
 
-        <div v-if="products.length > 0" class="grid grid-cols-2 gap-3 md:gap-4 md:grid-cols-3 lg:grid-cols-4">
+        <div v-if="products.length > 0" class="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4 lg:gap-6 xl:gap-7">
           <ProductCard
             v-for="(product, idx) in products"
             :key="product.id"
@@ -354,9 +323,9 @@
     </section>
 
     <template v-if="latestSectionVisible">
-    <section class="relative z-10 py-12">
+    <section class="relative z-10 pb-14">
       <div class="container max-w-7xl mx-auto px-4">
-        <div class="home-section-header home-section-header-latest mb-4">
+        <div class="home-section-header home-section-header-latest mb-6">
           <div class="home-section-header-row">
             <div class="home-section-copy">
               <h2 class="theme-section-heading home-section-heading-accent text-[1.9rem] md:text-[2.3rem]">{{ t('home.latest.title') }}</h2>
@@ -411,7 +380,12 @@
                 v-for="post in blogPosts"
                 :key="`blog-${post.id}`"
                 class="home-latest-stream-item"
+                role="link"
+                :tabindex="post?.slug ? 0 : -1"
+                :aria-label="getLocalizedText(post.title)"
                 @click="goToPost(post.slug)"
+                @keydown.enter.prevent="goToPost(post.slug)"
+                @keydown.space.prevent="goToPost(post.slug)"
               >
                 <div class="home-latest-stream-item-main">
                   <span class="home-latest-stream-item-dot"></span>
@@ -470,7 +444,12 @@
                 v-for="post in noticePosts"
                 :key="`notice-${post.id}`"
                 class="home-latest-stream-item"
+                role="link"
+                :tabindex="post?.slug ? 0 : -1"
+                :aria-label="getLocalizedText(post.title)"
                 @click="goToPost(post.slug)"
+                @keydown.enter.prevent="goToPost(post.slug)"
+                @keydown.space.prevent="goToPost(post.slug)"
               >
                 <div class="home-latest-stream-item-main">
                   <span class="home-latest-stream-item-dot home-latest-stream-item-dot-notice"></span>
@@ -511,6 +490,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { postAPI, productAPI } from '../api'
+import type { PublicPostLite, PublicProductLite } from '../api/types'
 import { getImageUrl } from '../utils/image'
 import { useLocalized, useProductLabels } from '../composables/useProduct'
 import { useBannerCarousel } from '../composables/useBannerCarousel'
@@ -537,14 +517,14 @@ const noticeEnabled = computed(() => navBuiltin.value?.notice !== false)
 const latestSectionVisible = computed(() => blogEnabled.value || noticeEnabled.value)
 
 // ==================== Shared State ====================
-const products = ref<any[]>([])
-const promoProducts = ref<any[]>([])
-const blogPosts = ref<any[]>([])
-const noticePosts = ref<any[]>([])
-const quickBuyProduct = ref<any>(null)
+const products = ref<PublicProductLite[]>([])
+const promoProducts = ref<PublicProductLite[]>([])
+const blogPosts = ref<PublicPostLite[]>([])
+const noticePosts = ref<PublicPostLite[]>([])
+const quickBuyProduct = ref<PublicProductLite | null>(null)
 const quickBuyVisible = ref(false)
 
-const openQuickBuy = (product: any) => {
+const openQuickBuy = (product: PublicProductLite) => {
   quickBuyProduct.value = product
   quickBuyVisible.value = true
 }
@@ -558,15 +538,11 @@ const {
   showHeroSection,
   heroImage,
   heroBadge,
-  heroTitle,
   heroSubtitle,
-  hasHeroLink,
-  heroPrimaryButtonText,
   loadBanners,
   handleNextHeroBanner,
   handlePrevHeroBanner,
   selectHeroBanner,
-  goToHeroLink,
   onBannerTouchStart,
   onBannerTouchEnd,
   stopHeroAutoPlay,
@@ -596,7 +572,7 @@ const {
 const listProductGroups = useProductListGroups(listProducts, listCategoryMap)
 
 // ==================== Card Mode ====================
-const formatDate = (dateString: string) => {
+const formatDate = (dateString?: string) => {
   if (!dateString) return ''
 
   const date = new Date(dateString)
@@ -605,42 +581,71 @@ const formatDate = (dateString: string) => {
   return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
 }
 
-const goToProduct = (slug: string) => {
+const goToProduct = (slug?: string) => {
+  if (!slug) return
   router.push(`/products/${slug}`)
 }
 
-const goToPost = (slug: string) => {
+const goToPost = (slug?: string) => {
+  if (!slug) return
   router.push(`/blog/${slug}`)
 }
 
-const getLatestLeadImage = (items: any[]) => {
+const getLatestLeadImage = (items: PublicPostLite[]) => {
   const lead = items.find((item) => String(item?.thumbnail || '').trim() !== '')
   return lead ? getImageUrl(lead.thumbnail) : ''
 }
 
-const isPromotionProduct = (product: any) => {
+const isPromotionProduct = (product: PublicProductLite) => {
   return hasPromotionPrice(product) || hasPromotionRules(product)
 }
 
-const loadPromotionProducts = async () => {
-  try {
-    const response = await productAPI.list({ page: 1, page_size: 48 })
-    const items = response.data.data || []
-    promoProducts.value = items.filter(isPromotionProduct).slice(0, 8)
-  } catch (error) {
-    promoProducts.value = []
-    console.error('Failed to load promotion products:', error)
-  }
-}
+const loadHomeProducts = async () => {
+  const promoMap = new Map<string, PublicProductLite>()
+  const featuredMap = new Map<string, PublicProductLite>()
+  const maxPromoItems = 8
+  const maxFeaturedItems = 12
+  const pageSize = 48
+  const maxScanPages = 4
 
-const loadFeaturedProducts = async () => {
   try {
-    const response = await productAPI.list({ page: 1, page_size: 48 })
-    const items = response.data.data || []
-    products.value = items.filter((product: any) => !isPromotionProduct(product)).slice(0, 12)
+    let page = 1
+    let totalPages = 1
+
+    while (
+      page <= totalPages &&
+      page <= maxScanPages &&
+      (promoMap.size < maxPromoItems || featuredMap.size < maxFeaturedItems)
+    ) {
+      const response = await productAPI.list({ page, page_size: pageSize })
+      const items = (response.data.data || []) as PublicProductLite[]
+      const pagination = response.data.pagination
+      totalPages = Math.max(Number(pagination?.total_page || page), page)
+
+      if (!Array.isArray(items) || items.length === 0) break
+
+      items.forEach((product, index) => {
+        const key = String(product?.id ?? product?.slug ?? `${page}-${index}`)
+        if (isPromotionProduct(product)) {
+          if (promoMap.size < maxPromoItems && !promoMap.has(key)) {
+            promoMap.set(key, product)
+          }
+          return
+        }
+
+        if (featuredMap.size < maxFeaturedItems && !featuredMap.has(key)) {
+          featuredMap.set(key, product)
+        }
+      })
+
+      page += 1
+    }
   } catch (error) {
-    console.error('Failed to load products:', error)
+    console.error('Failed to load home products:', error)
   }
+
+  promoProducts.value = Array.from(promoMap.values()).slice(0, maxPromoItems)
+  products.value = Array.from(featuredMap.values()).slice(0, maxFeaturedItems)
 }
 
 const loadPostColumn = async (type: 'blog' | 'notice') => {
@@ -649,13 +654,13 @@ const loadPostColumn = async (type: 'blog' | 'notice') => {
     page: 1,
     page_size: 5,
   })
-  return response.data.data || []
+  return (response.data.data || []) as PublicPostLite[]
 }
 
 const loadLatestPosts = async () => {
   if (!latestSectionVisible.value) return
 
-  const tasks: Promise<any[]>[] = []
+  const tasks: Array<Promise<PublicPostLite[]>> = []
   const taskKeys: Array<'blog' | 'notice'> = []
 
   if (blogEnabled.value) {
@@ -696,7 +701,7 @@ onMounted(async () => {
   if (templateMode.value === 'list') {
     await Promise.all([loadBanners(), listInitialize()])
   } else {
-    await Promise.all([loadBanners(), loadPromotionProducts(), loadFeaturedProducts(), loadLatestPosts()])
+    await Promise.all([loadBanners(), loadHomeProducts(), loadLatestPosts()])
   }
 })
 
@@ -714,6 +719,25 @@ onUnmounted(() => {
 .banner-fade-enter-from,
 .banner-fade-leave-to {
   opacity: 0;
+}
+
+.home-hero-bottom-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.home-hero-bottom-stack-card {
+  gap: 0.95rem;
+}
+
+.home-hero-subtitle-bottom {
+  text-align: center;
+}
+
+.home-hero-subtitle-bottom-card {
+  max-width: 42rem;
 }
 
 .promo-more-btn {
@@ -849,53 +873,6 @@ onUnmounted(() => {
   border-color: color-mix(in oklab, var(--ui-accent) 26%, var(--ui-border));
   background: color-mix(in oklab, var(--ui-bg-soft) 90%, transparent);
   color: color-mix(in oklab, var(--ui-accent) 52%, var(--ui-text-primary));
-}
-
-.home-channel-links {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.7rem;
-}
-
-.home-channel-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  min-height: 2.5rem;
-  padding: 0 0.92rem;
-  border-radius: 999px;
-  border: 1px solid color-mix(in oklab, var(--ui-border) 74%, white 26%);
-  background: color-mix(in oklab, var(--ui-bg-soft) 86%, transparent);
-  color: var(--ui-text-secondary);
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  text-decoration: none;
-  transition:
-    transform 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease,
-    background-color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.home-channel-link:hover {
-  transform: translateY(-1px);
-  color: var(--ui-text-primary);
-  border-color: color-mix(in oklab, var(--ui-accent) 20%, var(--ui-border));
-  background: color-mix(in oklab, var(--ui-bg-overlay-strong) 88%, transparent);
-  box-shadow: 0 16px 24px -24px rgba(15, 23, 42, 0.22);
-}
-
-.home-channel-link-icon {
-  width: 0.92rem;
-  height: 0.92rem;
-  flex-shrink: 0;
-  opacity: 0.8;
 }
 
 .home-latest-grid {
@@ -1111,13 +1088,21 @@ onUnmounted(() => {
 }
 
 .home-latest-stream-item:hover,
+.home-latest-stream-item:focus-visible,
 .home-latest-stream-item:active {
   transform: translateX(2px);
 }
 
 .home-latest-stream-item:hover .home-latest-stream-item-title,
+.home-latest-stream-item:focus-visible .home-latest-stream-item-title,
 .home-latest-stream-item:active .home-latest-stream-item-title {
   color: color-mix(in oklab, rgb(239 68 68) 78%, var(--ui-text-primary));
+}
+
+.home-latest-stream-item:focus-visible {
+  outline: none;
+  border-radius: 0.55rem;
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--ui-accent) 22%, transparent);
 }
 
 .home-latest-stream-item-main {
@@ -1172,6 +1157,10 @@ onUnmounted(() => {
 }
 
 @media (max-width: 767px) {
+  .home-hero-bottom-stack {
+    gap: 0.65rem;
+  }
+
   .home-section-header-row {
     flex-direction: column;
     align-items: flex-start;
@@ -1224,10 +1213,6 @@ onUnmounted(() => {
   .home-section-heading-accent::after {
     bottom: 0.08rem;
     height: 0.52rem;
-  }
-
-  .home-channel-links {
-    justify-content: flex-start;
   }
 
   .home-latest-stream {

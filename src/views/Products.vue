@@ -2,11 +2,14 @@
   <div class="products-page min-h-screen theme-page pt-20 pb-16">
     <div class="container mx-auto px-4">
       <!-- Page Header -->
-      <div class="mb-12 mt-12 text-center">
-        <h1 class="text-4xl md:text-5xl font-black mb-4 tracking-tight theme-text-primary">{{ t('nav.products') }}</h1>
-        <p class="theme-text-secondary max-w-2xl mx-auto text-lg border-b theme-border pb-8">
-          {{ t('products.subtitle') }}
-        </p>
+      <div class="theme-page-header">
+        <div class="theme-page-header-copy">
+          <h1 class="theme-section-heading theme-page-title">{{ t('nav.products') }}</h1>
+          <p class="theme-page-subtitle">
+            {{ t('products.subtitle') }}
+          </p>
+        </div>
+        <div class="theme-page-header-rule"></div>
       </div>
 
       <div class="flex flex-col lg:flex-row gap-8">

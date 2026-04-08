@@ -1,11 +1,16 @@
 <template>
   <div
-    class="group relative theme-panel rounded-xl border transition-all overflow-hidden flex flex-row items-center cursor-pointer theme-slide-up"
+    class="product-list-item-shell group relative theme-panel rounded-xl border transition-all overflow-hidden flex flex-row items-center cursor-pointer theme-slide-up"
     :class="isSoldOut(product)
       ? 'opacity-85 grayscale-[0.25] saturate-50 border-rose-300/60 dark:border-rose-900/40'
       : 'theme-card-interactive'"
     :style="{ animationDelay: `${index * animationStep}ms` }"
-    @click="$emit('click', product.slug)">
+    role="link"
+    :tabindex="product?.slug ? 0 : -1"
+    :aria-label="getLocalizedText(product.title)"
+    @click="handleProductClick(product.slug)"
+    @keydown.enter.prevent="handleProductClick(product.slug)"
+    @keydown.space.prevent="handleProductClick(product.slug)">
 
     <!-- Thumbnail -->
     <div class="w-11 h-11 sm:w-16 sm:h-16 flex-shrink-0 overflow-hidden relative rounded-lg m-1.5 sm:m-2.5">
@@ -125,11 +130,12 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+import type { PublicProductLite } from '../api/types'
 import { getFirstImageUrl, getImageUrl } from '../utils/image'
 import { useLocalized, useProductLabels } from '../composables/useProduct'
 
 withDefaults(defineProps<{
-  product: any
+  product: PublicProductLite
   index?: number
   animationStep?: number
 }>(), {
@@ -137,12 +143,34 @@ withDefaults(defineProps<{
   animationStep: 30,
 })
 
-defineEmits<{
+const emit = defineEmits<{
   click: [slug: string]
-  quickBuy: [product: any]
+  quickBuy: [product: PublicProductLite]
 }>()
 
 const { t } = useI18n()
 const { getLocalizedText, siteCurrency, formatPrice } = useLocalized()
 const { getPurchaseTypeLabel, getFulfillmentTypeLabel, getStockBadgeClass, getStockStatusLabel, isSoldOut, hasPromotionPrice, getPromotionPriceAmount, hasPromotionRules } = useProductLabels()
+
+const handleProductClick = (slug?: string) => {
+  if (!slug) return
+  emit('click', slug)
+}
 </script>
+
+<style scoped>
+.product-list-item-shell:focus-visible {
+  outline: none;
+  border-color: color-mix(in oklab, var(--ui-accent) 34%, var(--ui-border));
+  box-shadow:
+    0 0 0 3px color-mix(in oklab, var(--ui-accent) 16%, transparent),
+    0 12px 24px -20px rgba(15, 23, 42, 0.18);
+}
+
+:global(.dark .product-list-item-shell:focus-visible) {
+  border-color: color-mix(in oklab, var(--ui-accent) 42%, var(--ui-border));
+  box-shadow:
+    0 0 0 3px color-mix(in oklab, var(--ui-accent) 22%, transparent),
+    0 16px 28px -22px rgba(0, 0, 0, 0.44);
+}
+</style>

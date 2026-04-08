@@ -8,7 +8,10 @@
         :class="isSoldOut(product) ? 'is-disabled' : 'active'"
         :data-hue="getItemHueHex(product, idx)"
         :style="[getItemThemeVars(product, idx), { animationDelay: `${idx * 45}ms` }]"
+        role="link"
         :tabindex="isSoldOut(product) ? -1 : 0"
+        :aria-label="getPromotionAriaLabel(product)"
+        :aria-disabled="isSoldOut(product) ? 'true' : 'false'"
         @click="openProduct(product)"
         @keydown.enter.prevent="openProduct(product)"
         @keydown.space.prevent="openProduct(product)"
@@ -57,12 +60,13 @@
 <script setup lang="ts">
 import { computed, reactive, watch, type CSSProperties } from 'vue'
 import { useI18n } from 'vue-i18n'
+import type { PromotionRuleLite, PublicProductLite } from '../api/types'
 import { getFirstImageUrl, getImageUrl } from '../utils/image'
 import { amountToCents } from '../utils/money'
 import { useLocalized, useProductLabels } from '../composables/useProduct'
 
 const props = defineProps<{
-  products: any[]
+  products: PublicProductLite[]
 }>()
 
 const emit = defineEmits<{
@@ -102,9 +106,9 @@ const normalizeHex = (input: unknown) => {
   return ''
 }
 
-const getProductKey = (product: any, index: number) => String(product?.id ?? product?.slug ?? `promo-${index}`)
+const getProductKey = (product: PublicProductLite, index: number) => String(product?.id ?? product?.slug ?? `promo-${index}`)
 
-const getFallbackHueHex = (product: any, index: number) => {
+const getFallbackHueHex = (product: PublicProductLite, index: number) => {
   const explicitHex = normalizeHex(product?.promotion_hue || product?.special_deal_hue || product?.theme_hue)
   if (explicitHex) return explicitHex
   const seedText = `${getLocalizedText(product?.title)}-${product?.id || index}`
@@ -112,7 +116,7 @@ const getFallbackHueHex = (product: any, index: number) => {
   return defaultHuePalette[paletteIndex] || defaultHuePalette[index % defaultHuePalette.length] || '757a98'
 }
 
-const getItemHueHex = (product: any, index: number) => {
+const getItemHueHex = (product: PublicProductLite, index: number) => {
   const key = getProductKey(product, index)
   return imageHueMap[key] || getFallbackHueHex(product, index)
 }
@@ -154,7 +158,7 @@ const rgbToHsl = (r: number, g: number, b: number) => {
   }
 }
 
-const getItemThemeVars = (product: any, index: number): CSSProperties => {
+const getItemThemeVars = (product: PublicProductLite, index: number): CSSProperties => {
   const hex = getItemHueHex(product, index)
   const { r, g, b } = hexToRgb(hex)
   const { h, s, l } = rgbToHsl(r, g, b)
@@ -170,7 +174,7 @@ const getItemThemeVars = (product: any, index: number): CSSProperties => {
   } as CSSProperties
 }
 
-const getProductImage = (product: any) => {
+const getProductImage = (product: PublicProductLite) => {
   if (product?.images) {
     const image = getFirstImageUrl(product.images)
     if (image) return image
@@ -178,13 +182,13 @@ const getProductImage = (product: any) => {
   return getImageUrl(product?.category?.icon)
 }
 
-const getProductNameLine = (product: any) => {
+const getProductNameLine = (product: PublicProductLite) => {
   const title = getLocalizedText(product?.title)
   if (title) return title
   return t('products.promotionBadge')
 }
 
-const getProductDescLine = (product: any) => {
+const getProductDescLine = (product: PublicProductLite) => {
   const description = String(getLocalizedText(product?.description) || '').trim()
   return description
 }
@@ -262,21 +266,21 @@ const extractDominantImageHue = (img: HTMLImageElement) => {
   return ''
 }
 
-const applyImageHue = (product: any, index: number, img: HTMLImageElement | null) => {
+const applyImageHue = (product: PublicProductLite, index: number, img: HTMLImageElement | null) => {
   if (!img) return
   const key = getProductKey(product, index)
   const extractedHue = extractDominantImageHue(img)
   imageHueMap[key] = extractedHue || getFallbackHueHex(product, index)
 }
 
-const setImageRef = (product: any, index: number, el: Element | null) => {
+const setImageRef = (product: PublicProductLite, index: number, el: Element | null) => {
   if (!(el instanceof HTMLImageElement)) return
   if (el.complete && el.naturalWidth > 0) {
     applyImageHue(product, index, el)
   }
 }
 
-const handleImageLoad = (product: any, index: number, event: Event) => {
+const handleImageLoad = (product: PublicProductLite, index: number, event: Event) => {
   const target = event.target
   if (!(target instanceof HTMLImageElement)) return
   applyImageHue(product, index, target)
@@ -295,7 +299,7 @@ watch(
 
 const capPercent = (value: number) => Math.min(99.9, Math.max(0, value))
 
-const getDiscountPercent = (product: any): number | null => {
+const getDiscountPercent = (product: PublicProductLite): number | null => {
   const original = amountToCents(product?.price_amount)
   if (original === null || original <= 0) return null
 
@@ -331,13 +335,13 @@ const getDiscountPercent = (product: any): number | null => {
   return null
 }
 
-const getDiscountLabel = (product: any) => {
+const getDiscountLabel = (product: PublicProductLite) => {
   const discountPercent = getDiscountPercent(product)
   if (discountPercent === null) return '-0.0%'
   return `-${discountPercent.toFixed(1)}%`
 }
 
-const formatPromotionRule = (rule: any) => {
+const formatPromotionRule = (rule: PromotionRuleLite) => {
   const amount = formatPrice(rule.min_amount, siteCurrency.value)
   const value = rule.type === 'percent' ? String(rule.value) : formatPrice(rule.value, siteCurrency.value)
   const hasMin = Number(rule.min_amount) > 0
@@ -354,7 +358,7 @@ const formatPromotionRule = (rule: any) => {
   }
 }
 
-const getPromotionCopy = (product: any) => {
+const getPromotionCopy = (product: PublicProductLite) => {
   const rules = getPromotionRules(product)
   if (Array.isArray(rules) && rules.length > 0) {
     const firstRuleText = formatPromotionRule(rules[0])
@@ -369,7 +373,20 @@ const getPromotionCopy = (product: any) => {
   return getDiscountLabel(product)
 }
 
-const openProduct = (product: any) => {
+const getPromotionAriaLabel = (product: PublicProductLite) => {
+  const parts = [
+    getProductNameLine(product),
+    getPromotionCopy(product),
+  ]
+
+  if (isSoldOut(product)) {
+    parts.push(t('products.stockStatus.outOfStock'))
+  }
+
+  return parts.filter(Boolean).join(' ')
+}
+
+const openProduct = (product: PublicProductLite) => {
   if (isSoldOut(product) || !product?.slug) return
   emit('click', product.slug)
 }
@@ -378,7 +395,7 @@ const openProduct = (product: any) => {
 <style scoped>
 @font-face {
   font-family: 'SeagmManrope';
-  src: url('https://www.seagm.com/skin/fonts/manrope/v15/manrope-8951283ba1.woff2') format('woff2');
+  src: url('/vendor/fonts/manrope-8951283ba1.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
@@ -429,6 +446,16 @@ const openProduct = (product: any) => {
   cursor: pointer;
 }
 
+.specialdeals:focus-visible {
+  outline: none;
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--ui-accent) 34%, var(--ui-border));
+  box-shadow:
+    0 0 0 3px color-mix(in oklab, var(--ui-accent) 18%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    0 1.05rem 1.95rem -1.5rem rgba(15, 23, 42, 0.24);
+}
+
 .specialdeals.is-disabled {
   cursor: not-allowed;
   opacity: 0.65;
@@ -444,7 +471,7 @@ const openProduct = (product: any) => {
   color: var(--color);
   background-color: var(--background-color);
   background-image:
-    url('https://www.seagm.com/skin/images/art/gradient_bg-f5a8237834.svg'),
+    url('/vendor/textures/gradient_bg-f5a8237834.svg'),
     linear-gradient(
       calc(var(--angle-reverse, 1) * 135deg),
       hsl(var(--offset-h1) var(--offset-s1) var(--offset-l1)),
@@ -614,12 +641,12 @@ const openProduct = (product: any) => {
     display: flex !important;
     flex-direction: column;
     flex-wrap: wrap;
-    gap: 1em 0;
+    gap: 1.2em 0.75em;
     max-height: 20em;
     overflow-x: auto;
     overflow-y: hidden;
     margin: 0;
-    padding: 0.75rem;
+    padding: 0.75rem 0.85rem 0.75rem 0.75rem;
     scroll-padding-inline: 0.75rem;
     -webkit-overflow-scrolling: touch;
   }
@@ -630,7 +657,7 @@ const openProduct = (product: any) => {
 
   #special_deals > .list > .specialdeals {
     flex: none;
-    width: min(22.5em, calc(100% - 1.5rem));
+    width: min(22.5em, calc(100% - 2rem));
   }
 
   .item {
@@ -693,6 +720,14 @@ const openProduct = (product: any) => {
     0 0.85rem 1.7rem -1.35rem rgba(0, 0, 0, 0.56);
 }
 
+:global(.dark .specialdeals:focus-visible) {
+  border-color: color-mix(in oklab, var(--ui-accent) 44%, var(--ui-border));
+  box-shadow:
+    0 0 0 3px color-mix(in oklab, var(--ui-accent) 24%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 1rem 1.85rem -1.35rem rgba(0, 0, 0, 0.6);
+}
+
 :global(.dark .specialdeals[data-hue]) {
   --offset-s1: calc(var(--s) * 0.46);
   --offset-s2: calc(var(--s) * 0.5);
@@ -702,7 +737,7 @@ const openProduct = (product: any) => {
 
 :global(.dark .item) {
   background-image:
-    url('https://www.seagm.com/skin/images/art/gradient_bg-f5a8237834.svg'),
+    url('/vendor/textures/gradient_bg-f5a8237834.svg'),
     linear-gradient(
       calc(var(--angle-reverse, 1) * 135deg),
       hsl(var(--offset-h1) var(--offset-s1) var(--offset-l1)),

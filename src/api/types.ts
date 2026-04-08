@@ -11,6 +11,58 @@ export interface UserProfileData {
     password_change_mode?: 'set_without_old' | 'change_with_old'
 }
 
+export type LocalizedText = Record<string, string> | string | null | undefined
+
+export interface PublicCategoryLite {
+    id?: number | string
+    name?: LocalizedText
+    icon?: string | null
+}
+
+export interface PromotionRuleLite {
+    type?: 'percent' | 'fixed' | 'special_price' | string
+    value?: string | number | null
+    min_amount?: string | number | null
+    name?: string | null
+}
+
+export type PublicProductImages = string[] | { images?: string[] } | null | undefined
+
+export interface PublicProductLite {
+    id?: number | string
+    slug?: string
+    title?: LocalizedText
+    description?: LocalizedText
+    summary?: LocalizedText
+    thumbnail?: string | null
+    images?: PublicProductImages
+    category?: PublicCategoryLite | null
+    tags?: string[]
+    purchase_type?: string
+    fulfillment_type?: string
+    stock_status?: string
+    manual_stock_available?: number | string | null
+    auto_stock_available?: number | string | null
+    is_sold_out?: boolean
+    price_amount?: string | number | null
+    promotion_price_amount?: string | number | null
+    promotion_rules?: PromotionRuleLite[] | null
+    promotion_hue?: string | null
+    special_deal_hue?: string | null
+    theme_hue?: string | null
+}
+
+export interface PublicPostLite {
+    id?: number | string
+    slug?: string
+    title?: LocalizedText
+    summary?: LocalizedText
+    content?: LocalizedText
+    thumbnail?: string | null
+    created_at?: string
+    type?: 'blog' | 'notice' | string
+}
+
 export interface PublicMemberLevel {
     id: number
     name: Record<string, string>

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="product-detail-page min-h-screen theme-page pt-24 pb-16">
+    class="product-detail-page min-h-screen theme-page pt-24 pb-44 lg:pb-16">
     <div class="container mx-auto px-4">
       <!-- Loading Skeleton -->
       <div v-if="loading" class="space-y-8">
@@ -45,276 +45,359 @@
           }}</span>
         </nav>
 
-        <!-- Main Info Card -->
-        <div
-          class="theme-panel backdrop-blur-xl border rounded-3xl overflow-hidden mb-8 shadow-2xl">
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
-            <!-- Product Images (Left) -->
-            <ProductImageGallery
-              :images="images"
-              :current-image="currentImage"
-              :product-title="getLocalizedText(product.title)"
-              @update:current-image="currentImage = $event"
-            />
-
-            <!-- Product Info (Right) -->
-            <div class="p-6 md:p-8 lg:p-12 flex flex-col justify-center">
-              <div class="mb-6">
-                <div v-if="categoryName" class="mb-3 text-xs uppercase tracking-wider theme-text-muted">
-                  {{ t('productDetail.categoryLabel') }} · {{ categoryName }}
+        <!-- Hero + Purchase Layout -->
+        <div class="mb-8 space-y-6">
+          <section
+            class="relative overflow-hidden rounded-[2rem] border border-black/5 bg-[#d7d9df] shadow-[0_26px_70px_-52px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-[#202530]"
+          >
+            <div
+              class="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.42)_28%,transparent_29%,transparent_44%,rgba(255,255,255,0.22)_45%,transparent_46%,transparent_67%,rgba(255,255,255,0.16)_68%,transparent_69%)] opacity-80 dark:bg-[linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.05)_28%,transparent_29%,transparent_44%,rgba(255,255,255,0.035)_45%,transparent_46%,transparent_67%,rgba(255,255,255,0.025)_68%,transparent_69%)] dark:opacity-100"
+            ></div>
+            <div class="relative flex flex-col gap-6 px-5 py-5 sm:px-6 sm:py-6 lg:flex-row lg:items-center lg:gap-8 lg:px-8 lg:py-7">
+              <div class="shrink-0">
+                <div class="rounded-[1.6rem] bg-white/25 p-2 shadow-[0_18px_38px_-28px_rgba(15,23,42,0.45)] backdrop-blur-sm dark:bg-white/[0.05]">
+                  <div class="h-28 w-28 overflow-hidden rounded-[1.25rem] border border-white/45 bg-white/80 shadow-sm sm:h-36 sm:w-36 lg:h-40 lg:w-40 dark:border-white/10 dark:bg-slate-900/80">
+                    <img
+                      v-if="heroDisplayImage"
+                      :src="heroDisplayImage"
+                      :alt="getLocalizedText(product.title)"
+                      class="h-full w-full object-cover"
+                    />
+                    <div
+                      v-else
+                      class="flex h-full w-full items-center justify-center bg-slate-100 text-slate-400 dark:bg-slate-900 dark:text-slate-600"
+                    >
+                      <svg class="h-12 w-12" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                          fill-rule="evenodd"
+                          d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <div v-if="images.length > 1" class="mt-3 flex gap-2 overflow-x-auto pb-1">
+                    <button
+                      v-for="(image, index) in images"
+                      :key="index"
+                      type="button"
+                      class="h-10 w-10 shrink-0 overflow-hidden rounded-xl border transition-all"
+                      :class="currentImage === image
+                        ? 'border-white/80 bg-white shadow-[0_10px_24px_-18px_rgba(15,23,42,0.45)] dark:border-white/35 dark:bg-slate-900'
+                        : 'border-transparent bg-white/35 hover:border-white/55 dark:bg-white/[0.04] dark:hover:border-white/20'"
+                      @click="currentImage = image"
+                    >
+                      <img :src="image" :alt="`Image ${index + 1}`" class="h-full w-full object-cover" loading="lazy" />
+                    </button>
+                  </div>
                 </div>
+              </div>
+
+              <div class="min-w-0 flex-1">
+                <div class="mb-4 flex flex-wrap items-center gap-2">
+                  <span
+                    v-if="categoryName"
+                    class="inline-flex items-center rounded-full border border-white/50 bg-white/70 px-3 py-1 text-xs font-medium text-slate-700 shadow-sm backdrop-blur-sm dark:border-white/12 dark:bg-white/[0.05] dark:text-slate-200"
+                  >
+                    {{ categoryName }}
+                  </span>
+                  <span
+                    class="inline-flex items-center rounded-full border border-white/45 bg-white/70 px-3 py-1 text-xs font-medium text-slate-700 shadow-sm backdrop-blur-sm dark:border-white/12 dark:bg-white/[0.05] dark:text-slate-200"
+                  >
+                    {{ getPurchaseTypeLabel(product.purchase_type) }}
+                  </span>
+                  <span
+                    class="inline-flex items-center rounded-full border border-white/45 bg-white/70 px-3 py-1 text-xs font-medium text-slate-700 shadow-sm backdrop-blur-sm dark:border-white/12 dark:bg-white/[0.05] dark:text-slate-200"
+                  >
+                    {{ getFulfillmentTypeLabel(product.fulfillment_type) }}
+                  </span>
+                </div>
+
+                <h1 class="mb-4 text-[1.9rem] font-semibold leading-[1.08] tracking-[-0.032em] text-white sm:text-[2.3rem] lg:text-[2.7rem]">
+                  {{ getLocalizedText(product.title) }}
+                </h1>
 
                 <div v-if="product.tags && product.tags.length > 0" class="mb-4 flex flex-wrap gap-2">
                   <span
                     v-for="(tag, index) in product.tags"
                     :key="index"
-                    class="theme-badge theme-badge-neutral px-3 py-1 text-xs"
+                    class="inline-flex items-center rounded-full border border-white/35 bg-white/18 px-3 py-1 text-xs font-medium text-white/88 backdrop-blur-sm"
                   >
                     {{ tag }}
                   </span>
                 </div>
 
-                <h1 class="mb-4 text-2xl md:text-3xl lg:text-5xl font-black leading-tight theme-text-primary">
-                  {{ getLocalizedText(product.title) }}
-                </h1>
+                <p v-if="getLocalizedText(product.description)" class="max-w-3xl text-sm leading-6 text-white/82 sm:text-base">
+                  {{ getLocalizedText(product.description) }}
+                </p>
+              </div>
+            </div>
+          </section>
 
-                <div class="mb-6 flex flex-wrap items-center gap-2">
-                  <span
-                    class="theme-badge"
-                    :class="product.purchase_type === 'guest'
-                      ? 'theme-badge-warning'
-                      : 'theme-badge-success'"
-                  >
-                    <svg v-if="product.purchase_type === 'guest'" class="mr-1 h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2" />
-                      <circle cx="9.5" cy="7" r="3" stroke-width="2" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 8l2 2-2 2" />
-                    </svg>
-                    <svg v-else class="mr-1 h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <rect x="3" y="11" width="18" height="10" rx="2" ry="2" stroke-width="2" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11V8a5 5 0 0110 0v3" />
-                    </svg>
-                    {{ getPurchaseTypeLabel(product.purchase_type) }}
-                  </span>
-
-                  <span
-                    class="theme-badge"
-                    :class="product.fulfillment_type === 'auto'
-                      ? 'theme-badge-info'
-                      : 'theme-badge-neutral'"
-                  >
-                    <svg v-if="product.fulfillment_type === 'auto'" class="mr-1 h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" />
-                    </svg>
-                    <svg v-else class="mr-1 h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.7 6.3l3 3m-9.4 9.4l-4 1 1-4 9.9-9.9a2.1 2.1 0 013 3L8.3 18.7z" />
-                    </svg>
-                    {{ getFulfillmentTypeLabel(product.fulfillment_type) }}
-                  </span>
-
-                  <span
-                    class="theme-badge"
-                    :class="getStockBadgeClass(product.stock_status)"
-                  >
-                    {{ getStockStatusLabel(product) }}
-                  </span>
-                </div>
-
-                <div class="mb-8 border-b theme-border pb-8" ref="priceSection">
-                  <div class="mb-3 flex flex-wrap items-center gap-2">
-                    <span class="text-sm theme-text-muted">{{ t('products.price') }}</span>
-                    <span v-if="(selectedSku && hasSkuPromotionPrice(selectedSku)) || (!selectedSku && hasPromotionPrice(product))" class="theme-badge theme-badge-danger">
-                      {{ t('products.promotionTag') }}
-                    </span>
-                    <span v-if="hasMemberPrice" class="theme-badge bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
-                      {{ t('products.memberPriceTag') }}
-                    </span>
-                  </div>
-                  <!-- 选中 SKU 且有促销价 -->
-                  <div v-if="selectedSku && hasSkuPromotionPrice(selectedSku)" class="space-y-2">
-                    <div class="flex flex-wrap items-end gap-4">
-                      <span v-if="hasMemberPrice && selectedSkuMemberPrice! < Number(getSkuPromotionPriceAmount(selectedSku))" class="theme-price-lg text-amber-600 dark:text-amber-300">
-                        {{ formatPrice(selectedSkuMemberPrice!, siteCurrency) }}
-                      </span>
-                      <span v-else class="theme-price-lg text-rose-600 dark:text-rose-300">
-                        {{ formatPrice(getSkuPromotionPriceAmount(selectedSku), siteCurrency) }}
-                      </span>
-                      <span class="theme-price-original">
-                        {{ formatPrice(selectedSku.price_amount, siteCurrency) }}
-                      </span>
-                    </div>
-                    <p v-if="hasMemberPrice && selectedSkuMemberPrice! < Number(getSkuPromotionPriceAmount(selectedSku))" class="text-sm font-medium text-amber-600 dark:text-amber-300">
-                      {{ t('products.memberPriceTag') }} · {{ t('products.saveAmount') }} {{ formatPrice(Number(selectedSku.price_amount) - selectedSkuMemberPrice!, siteCurrency) }}
-                    </p>
-                    <p v-else class="text-sm font-medium text-rose-500 dark:text-rose-300">
-                      {{ t('products.saveAmount') }} {{ formatPrice(getSkuPromotionSaveAmount(selectedSku), siteCurrency) }}
-                    </p>
-                  </div>
-                  <!-- 选中 SKU 有会员价但无促销价 -->
-                  <div v-else-if="selectedSku && hasMemberPrice" class="space-y-2">
-                    <div class="flex flex-wrap items-end gap-4">
-                      <span class="theme-price-lg text-amber-600 dark:text-amber-300">
-                        {{ formatPrice(selectedSkuMemberPrice!, siteCurrency) }}
-                      </span>
-                      <span class="theme-price-original">
-                        {{ formatPrice(selectedSku.price_amount, siteCurrency) }}
-                      </span>
-                    </div>
-                    <p class="text-sm font-medium text-amber-600 dark:text-amber-300">
-                      {{ t('products.memberPriceTag') }} · {{ t('products.saveAmount') }} {{ formatPrice(Number(selectedSku.price_amount) - selectedSkuMemberPrice!, siteCurrency) }}
-                    </p>
-                  </div>
-                  <!-- 选中 SKU 但无促销价也无会员价 -->
-                  <div v-else-if="selectedSku" class="flex items-end gap-4">
-                    <span class="theme-price-lg theme-text-accent">
-                      {{ formatPrice(selectedSku.price_amount, siteCurrency) }}
-                    </span>
-                  </div>
-                  <!-- 未选 SKU，产品级有促销价 -->
-                  <div v-else-if="hasPromotionPrice(product)" class="space-y-2">
-                    <div class="flex flex-wrap items-end gap-4">
-                      <span class="theme-price-lg text-rose-600 dark:text-rose-300">
-                        {{ formatPrice(getPromotionPriceAmount(product), siteCurrency) }}
-                      </span>
-                      <span class="theme-price-original">
-                        {{ formatPrice(product.price_amount, siteCurrency) }}
-                      </span>
-                    </div>
-                    <p class="text-sm font-medium text-rose-500 dark:text-rose-300">
-                      {{ t('products.saveAmount') }} {{ formatPrice(getPromotionSaveAmount(product), siteCurrency) }}
-                    </p>
-                  </div>
-                  <!-- 未选 SKU，无促销 -->
-                  <div v-else class="flex items-end gap-4">
-                    <span class="theme-price-lg theme-text-accent">
-                      {{ formatPrice(product.price_amount, siteCurrency) }}
-                    </span>
-                  </div>
-                </div>
-
-                <!-- 活动规则展示 -->
-                <div v-if="hasPromotionRules(product)" class="mb-8 rounded-xl border border-orange-200 dark:border-orange-800/50 bg-orange-50/50 dark:bg-orange-950/20 px-4 py-3">
-                  <h2 class="mb-2 text-sm font-bold text-orange-700 dark:text-orange-300 flex items-center gap-1.5">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" />
-                    </svg>
-                    {{ t('products.promotionRulesTitle') }}
-                  </h2>
-                  <ul class="space-y-1">
-                    <li v-for="rule in getPromotionRules(product)" :key="rule.id" class="text-sm text-orange-600 dark:text-orange-300/90 flex items-center gap-1.5">
-                      <span class="w-1 h-1 rounded-full bg-orange-400 dark:bg-orange-500 shrink-0"></span>
-                      <span>{{ formatPromotionRule(rule) }}</span>
-                    </li>
-                  </ul>
-                </div>
-
-                <div v-if="activeSkus.length" class="mb-8">
-                  <h2 class="mb-3 text-sm font-bold uppercase tracking-widest theme-text-muted">
+          <section class="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.72fr)_minmax(340px,0.9fr)] xl:gap-7">
+            <div
+              class="rounded-[2rem] border border-black/5 bg-white/95 p-5 shadow-[0_20px_55px_-40px_rgba(15,23,42,0.32)] dark:border-white/10 dark:bg-slate-950/72 sm:p-6"
+            >
+              <div class="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 pb-4 dark:border-white/10">
+                <div>
+                  <p class="text-sm font-medium text-slate-500 dark:text-slate-400">{{ t('productDetail.skuTitle') }}</p>
+                  <h2 class="mt-1 text-xl font-semibold text-slate-900 dark:text-white">
                     {{ t('productDetail.skuTitle') }}
                   </h2>
-                  <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                    <button
-                      v-for="sku in activeSkus"
-                      :key="sku.id"
-                      type="button"
-                      class="flex flex-col items-start rounded-xl border px-3 py-2 text-sm transition-all min-h-[44px]"
-                      :class="[
-                        normalizeSkuId(sku.id) === selectedSkuId ? 'theme-selected-surface ring-1 ring-primary/30' : 'theme-btn-secondary',
-                        isSkuPurchasable(sku) ? 'hover:-translate-y-0.5' : 'cursor-not-allowed opacity-55 border-dashed',
-                      ]"
-                      :disabled="!isSkuPurchasable(sku)"
-                      @click="selectedSkuId = normalizeSkuId(sku.id)"
-                    >
-                      <span class="font-semibold leading-tight">{{ skuDisplayText(sku) }}</span>
+                </div>
+                <span
+                  v-if="activeSkus.length"
+                  class="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-500 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-300"
+                >
+                  {{ activeSkus.length }} SKU
+                </span>
+              </div>
+
+              <div v-if="activeSkus.length" class="grid grid-cols-1 gap-3 md:grid-cols-2">
+                <button
+                  v-for="sku in activeSkus"
+                  :key="sku.id"
+                  type="button"
+                  class="group relative flex min-h-[106px] items-center justify-between rounded-[1.1rem] border px-4 py-3.5 text-left transition-all"
+                  :class="[
+                    normalizeSkuId(sku.id) === selectedSkuId
+                      ? 'border-orange-400 bg-white shadow-[0_18px_36px_-34px_rgba(249,115,22,0.55)] ring-1 ring-orange-200/70 dark:border-orange-400/70 dark:bg-slate-950 dark:ring-orange-400/15'
+                      : 'border-slate-200 bg-white shadow-[0_12px_26px_-28px_rgba(15,23,42,0.16)] hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_18px_34px_-30px_rgba(15,23,42,0.2)] dark:border-white/10 dark:bg-white/[0.02] dark:hover:border-white/16',
+                    isSkuPurchasable(sku) ? '' : 'cursor-not-allowed opacity-55 border-dashed',
+                  ]"
+                  :disabled="!isSkuPurchasable(sku)"
+                  @click="selectedSkuId = normalizeSkuId(sku.id)"
+                >
+                  <span
+                    v-if="normalizeSkuId(sku.id) === selectedSkuId"
+                    class="absolute right-3 top-3 h-2 w-2 rounded-full bg-orange-500 shadow-[0_0_0_4px_rgba(249,115,22,0.14)] dark:bg-orange-300 dark:shadow-[0_0_0_4px_rgba(251,146,60,0.12)]"
+                  ></span>
+                  <div class="flex min-w-0 items-center gap-3.5">
+                    <div class="h-14 w-14 shrink-0 overflow-hidden rounded-[0.95rem] border border-black/5 bg-slate-100 dark:border-white/10 dark:bg-slate-900/90">
+                      <img
+                        v-if="heroDisplayImage"
+                        :src="heroDisplayImage"
+                        :alt="skuDisplayText(sku)"
+                        class="h-full w-full object-cover"
+                      />
+                      <div
+                        v-else
+                        class="flex h-full w-full items-center justify-center text-slate-400 dark:text-slate-600"
+                      >
+                        <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 20 20">
+                          <path
+                            fill-rule="evenodd"
+                            d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <div class="flex items-start gap-2">
+                        <p class="line-clamp-2 text-[0.96rem] font-semibold leading-6 text-slate-900 dark:text-white">
+                          {{ skuDisplayText(sku) }}
+                        </p>
+                        <span
+                          v-if="isSkuPurchasable(sku) && product.fulfillment_type === 'auto'"
+                          class="mt-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/12 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-300"
+                        >
+                          <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" />
+                          </svg>
+                        </span>
+                      </div>
                       <span
-                        class="mt-1 rounded-full border px-2 py-0.5 text-[11px]"
+                        class="mt-2 inline-flex rounded-full border px-2.5 py-1 text-[11px] font-medium"
                         :class="skuStockBadgeClass(sku)"
                       >
                         {{ skuStockText(sku) }}
                       </span>
-                    </button>
+                    </div>
                   </div>
-                  <p v-if="requiresSKUSelection" class="mt-2 text-xs text-amber-500">
-                    {{ t('productDetail.skuRequired') }}
-                  </p>
-                </div>
 
-                <div class="mb-8">
-                  <h2 class="mb-3 text-sm font-bold uppercase tracking-widest theme-text-muted">
-                    {{ t('productDetail.description') }}
-                  </h2>
-                  <p class="text-lg leading-relaxed theme-text-secondary">
-                    {{ getLocalizedText(product.description) }}
-                  </p>
-                </div>
+                  <div class="ml-4 flex shrink-0 flex-col items-end justify-center text-right">
+                    <span
+                      v-if="getSkuCardOriginalPrice(sku) !== null"
+                      class="text-xs font-medium text-slate-400 line-through dark:text-slate-500"
+                    >
+                      {{ formatPrice(getSkuCardOriginalPrice(sku)!, siteCurrency) }}
+                    </span>
+                    <span class="mt-1 text-[1.08rem] font-semibold text-orange-600 dark:text-orange-300">
+                      {{ formatPrice(getSkuCardCurrentPrice(sku), siteCurrency) }}
+                    </span>
+                  </div>
+                </button>
               </div>
 
-              <!-- Quantity Selector -->
-                <div class="mb-8">
-                  <h2 class="mb-3 text-sm font-bold uppercase tracking-widest theme-text-muted">
-                    {{ t('productDetail.quantity') }}
-                  </h2>
-                  <div class="flex items-center rounded-lg border theme-border overflow-hidden w-fit">
+              <p v-if="requiresSKUSelection" class="mt-3 text-xs font-medium text-amber-500">
+                {{ t('productDetail.skuRequired') }}
+              </p>
+
+              <div
+                v-if="hasPromotionRules(product)"
+                class="mt-6 rounded-[1.4rem] border border-amber-200/70 bg-amber-50/80 px-4 py-4 shadow-[0_16px_40px_-36px_rgba(217,119,6,0.55)] dark:border-amber-400/20 dark:bg-amber-500/10"
+              >
+                <h3 class="mb-3 flex items-center gap-2 text-sm font-semibold text-amber-700 dark:text-amber-300">
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" />
+                  </svg>
+                  {{ t('products.promotionRulesTitle') }}
+                </h3>
+                <ul class="space-y-2">
+                  <li
+                    v-for="rule in getPromotionRules(product)"
+                    :key="rule.id"
+                    class="flex items-start gap-2 text-sm text-amber-700 dark:text-amber-200/90"
+                  >
+                    <span class="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400 dark:bg-amber-300"></span>
+                    <span>{{ formatPromotionRule(rule) }}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="space-y-5 xl:sticky xl:top-28 xl:self-start">
+              <div
+                class="rounded-[1.8rem] border border-black/5 bg-white/95 px-5 py-5 shadow-[0_18px_45px_-38px_rgba(15,23,42,0.3)] dark:border-white/10 dark:bg-slate-950/75 sm:px-6"
+              >
+                <div class="flex items-center justify-between gap-4">
+                  <div>
+                    <p class="text-sm font-medium text-slate-500 dark:text-slate-400">{{ t('quickBuy.quantity') }}</p>
+                    <h2 class="mt-1 text-lg font-semibold text-slate-900 dark:text-white">
+                      {{ t('productDetail.quantity') }}
+                    </h2>
+                  </div>
+                  <div class="flex items-center overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-white/[0.04]">
                     <button
                       type="button"
-                      class="w-10 h-10 flex items-center justify-center theme-text-secondary hover:bg-gray-50 dark:hover:bg-white/5 transition-colors disabled:opacity-30"
+                      class="flex h-12 w-12 items-center justify-center text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-800 disabled:opacity-30 dark:text-slate-300 dark:hover:bg-white/[0.06] dark:hover:text-white"
                       :disabled="quantity <= 1"
                       @click="quantity = Math.max(1, quantity - 1)"
                     >
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                         <path stroke-linecap="round" d="M20 12H4" />
                       </svg>
                     </button>
                     <input
                       type="text"
                       inputmode="numeric"
-                      class="w-14 h-10 text-center text-sm font-semibold theme-text-primary border-x theme-border bg-transparent outline-none tabular-nums [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      class="h-12 w-16 border-x border-slate-200 bg-transparent text-center text-base font-semibold tabular-nums text-slate-900 outline-none [appearance:textfield] dark:border-white/10 dark:text-white [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                       :value="quantity"
                       @change="handleQuantityInput($event)"
                       @keydown.enter.prevent="($event.target as HTMLInputElement)?.blur()"
                     />
                     <button
                       type="button"
-                      class="w-10 h-10 flex items-center justify-center theme-text-secondary hover:bg-gray-50 dark:hover:bg-white/5 transition-colors disabled:opacity-30"
+                      class="flex h-12 w-12 items-center justify-center text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-800 disabled:opacity-30 dark:text-slate-300 dark:hover:bg-white/[0.06] dark:hover:text-white"
                       :disabled="quantityEffectiveLimit !== null && quantity >= quantityEffectiveLimit"
                       @click="quantity = quantity + 1"
                     >
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                         <path stroke-linecap="round" d="M12 4v16m8-8H4" />
                       </svg>
                     </button>
                   </div>
                 </div>
+              </div>
 
-              <!-- Purchase Actions (Desktop + original position) -->
-              <div ref="purchaseActionsRef" class="mt-auto space-y-6">
-                <p v-if="cannotPurchaseReason" class="rounded-xl border theme-alert-danger px-4 py-3 text-sm font-semibold">
+              <div
+                class="rounded-[1.9rem] border border-black/5 bg-white/95 px-5 py-5 shadow-[0_22px_58px_-40px_rgba(15,23,42,0.34)] dark:border-white/10 dark:bg-slate-950/78 sm:px-6 sm:py-6"
+              >
+                <div class="border-b border-slate-200 pb-5 dark:border-white/10">
+                  <p class="text-sm font-medium text-slate-500 dark:text-slate-400">{{ t('cart.summaryTitle') }}</p>
+                  <div class="mt-3 flex items-start justify-between gap-4">
+                    <div class="min-w-0">
+                      <p class="text-[2rem] font-semibold tracking-[-0.035em] text-orange-600 dark:text-orange-300 sm:text-[2.4rem]">
+                        {{ summaryTotalPriceDisplay }}
+                      </p>
+                      <p
+                        v-if="summaryOriginalTotalPriceDisplay"
+                        class="mt-1 text-sm font-medium text-slate-400 line-through dark:text-slate-500"
+                      >
+                        {{ summaryOriginalTotalPriceDisplay }}
+                      </p>
+                    </div>
+                    <span
+                      v-if="summaryPriceBadge"
+                      class="inline-flex shrink-0 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-600 dark:border-orange-400/20 dark:bg-orange-500/10 dark:text-orange-300"
+                    >
+                      {{ summaryPriceBadge }}
+                    </span>
+                  </div>
+                  <div
+                    v-if="summaryPriceNote"
+                    class="mt-4 rounded-2xl border border-orange-100 bg-orange-50/80 px-3.5 py-3 text-sm font-medium text-orange-700 dark:border-orange-400/15 dark:bg-orange-500/10 dark:text-orange-200/90"
+                  >
+                    {{ summaryPriceNote }}
+                  </div>
+                </div>
+
+                <div
+                  v-if="selectedSku"
+                  class="mt-5 rounded-[1.35rem] border border-black/5 bg-slate-50/85 px-4 py-3.5 dark:border-white/10 dark:bg-white/[0.04]"
+                >
+                  <p class="text-xs font-medium uppercase tracking-[0.18em] text-slate-400 dark:text-slate-500">{{ t('cart.skuLabel') }}</p>
+                  <div class="mt-2 flex items-start justify-between gap-4">
+                    <p class="line-clamp-2 text-sm font-semibold leading-6 text-slate-900 dark:text-white">
+                      {{ skuDisplayText(selectedSku) }}
+                    </p>
+                    <span class="shrink-0 text-sm font-semibold text-rose-600 dark:text-rose-300">
+                      {{ formatPrice(getSkuCardCurrentPrice(selectedSku), siteCurrency) }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="mt-5 rounded-[1.35rem] border border-black/5 bg-slate-50/85 px-4 py-4 dark:border-white/10 dark:bg-white/[0.04]">
+                  <div class="flex items-center justify-between gap-4 text-sm">
+                    <span class="text-slate-500 dark:text-slate-400">{{ t('quickBuy.stock') }}</span>
+                    <span class="font-medium text-slate-900 dark:text-white">{{ getStockStatusLabel(product) }}</span>
+                  </div>
+                  <div class="mt-3 flex items-center justify-between gap-4 text-sm border-t border-slate-200 pt-3 dark:border-white/10">
+                    <span class="text-slate-500 dark:text-slate-400">{{ t('products.fulfillmentTypeLabel') }}</span>
+                    <span class="font-medium text-slate-900 dark:text-white">{{ getFulfillmentTypeLabel(product.fulfillment_type) }}</span>
+                  </div>
+                  <div class="mt-3 flex items-center justify-between gap-4 text-sm border-t border-slate-200 pt-3 dark:border-white/10">
+                    <span class="text-slate-500 dark:text-slate-400">{{ t('productPurchase.label') }}</span>
+                    <span class="font-medium text-slate-900 dark:text-white">{{ getPurchaseTypeLabel(product.purchase_type) }}</span>
+                  </div>
+                </div>
+
+                <p v-if="cannotPurchaseReason" class="mt-5 rounded-2xl border theme-alert-danger px-4 py-3 text-sm font-semibold">
                   {{ cannotPurchaseReason }}
                 </p>
-                <p v-if="purchaseWarning" class="rounded-xl border theme-alert-warning px-4 py-3 text-sm font-semibold">
+                <p v-if="purchaseWarning" class="mt-4 rounded-2xl border theme-alert-warning px-4 py-3 text-sm font-semibold">
                   {{ purchaseWarning }}
                 </p>
 
-                <div class="space-y-3">
-                  <button v-if="requiresLogin" @click="goLogin"
-                    class="w-full px-6 py-4 theme-btn-primary font-bold rounded-xl transition-colors min-h-[48px]">
+                <div class="mt-6 hidden space-y-3 lg:block">
+                  <button
+                    v-if="requiresLogin"
+                    @click="goLogin"
+                    class="w-full rounded-[1.15rem] theme-btn-primary px-6 py-4 font-bold transition-colors min-h-[48px]"
+                  >
                     {{ t('productDetail.loginToBuy') }}
                   </button>
-                  <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <button @click="addToCart" :disabled="!canPurchase"
-                      class="px-6 py-4 border theme-btn-secondary font-bold rounded-xl cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 min-h-[48px]">
+                  <div v-else class="grid grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] gap-3">
+                    <button
+                      @click="addToCart"
+                      :disabled="!canPurchase"
+                      class="rounded-[1.15rem] bg-[#f7b324] px-5 py-4 font-bold text-slate-900 shadow-[0_16px_36px_-30px_rgba(247,179,36,0.95)] transition-colors hover:bg-[#f2aa13] disabled:cursor-not-allowed disabled:opacity-50 min-h-[48px]"
+                    >
                       {{ t('productDetail.addToCart') }}
                     </button>
-                    <button @click="buyNow" :disabled="!canPurchase"
-                      class="px-6 py-4 theme-btn-primary font-bold rounded-xl transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 min-h-[48px]">
+                    <button
+                      @click="buyNow"
+                      :disabled="!canPurchase"
+                      class="rounded-[1.15rem] bg-[linear-gradient(135deg,#ff6a1a,#ff4a0d)] px-5 py-4 font-bold text-white shadow-[0_20px_44px_-30px_rgba(255,90,26,0.9)] transition-opacity hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50 min-h-[48px]"
+                    >
                       {{ t('productDetail.buyNow') }}
                     </button>
                   </div>
                 </div>
-
               </div>
             </div>
-          </div>
+          </section>
         </div>
 
         <!-- Details Content Card -->
@@ -343,7 +426,7 @@
 
         <!-- Mobile Fixed Purchase Bar -->
         <ProductMobileBar
-          :visible="showMobileBar && !!product && !loading"
+          :visible="!!product && !loading"
           :requires-login="requiresLogin"
           :can-purchase="canPurchase"
           :show-member-price="mobileBarShowMemberPrice"
@@ -393,7 +476,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '../stores/app'
@@ -403,13 +486,11 @@ import { processHtmlForDisplay } from '../utils/content'
 import { useCartStore } from '../stores/cart'
 import { useBuyNowStore } from '../stores/buyNow'
 import { useUserAuthStore } from '../stores/userAuth'
-import { debounceAsync } from '../utils/debounce'
 import { useHead } from '@unhead/vue'
 // centsToAmount used internally by composable
 import { buildSkuDisplayText, normalizeSkuId } from '../utils/sku'
 import { useLocalized, useProductLabels } from '../composables/useProduct'
 import { toast } from '../composables/useToast'
-import ProductImageGallery from '../components/product/ProductImageGallery.vue'
 import ProductMobileBar from '../components/product/ProductMobileBar.vue'
 
 const route = useRoute()
@@ -421,7 +502,7 @@ const buyNowStore = useBuyNowStore()
 const userAuthStore = useUserAuthStore()
 
 const { getLocalizedText, siteCurrency, formatPrice } = useLocalized()
-const { getPurchaseTypeLabel, getFulfillmentTypeLabel, getStockBadgeClass, getStockStatusLabel, hasPromotionPrice, getPromotionPriceAmount, getPromotionSaveAmount, hasSkuPromotionPrice, getSkuPromotionPriceAmount, getSkuPromotionSaveAmount, hasPromotionRules, getPromotionRules } = useProductLabels()
+const { getPurchaseTypeLabel, getFulfillmentTypeLabel, getStockStatusLabel, hasPromotionPrice, getPromotionPriceAmount, getPromotionSaveAmount, hasSkuPromotionPrice, getSkuPromotionPriceAmount, getSkuPromotionSaveAmount, hasPromotionRules, getPromotionRules } = useProductLabels()
 
 const formatPromotionRule = (rule: any) => {
   const amount = formatPrice(rule.min_amount, siteCurrency.value)
@@ -445,9 +526,6 @@ const currentImage = ref<string>('')
 const selectedSkuId = ref(0)
 const quantity = ref(1)
 const purchaseWarning = ref('')
-const purchaseActionsRef = ref<HTMLElement | null>(null)
-const showMobileBar = ref(false)
-let observer: IntersectionObserver | null = null
 
 const activeSkus = computed(() => {
   const rows = Array.isArray(product.value?.skus) ? product.value.skus : []
@@ -487,6 +565,20 @@ const hasMemberPrice = computed(() => {
   const basePrice = Number(selectedSku.value?.price_amount || 0)
   return selectedSkuMemberPrice.value < basePrice
 })
+
+const getSkuCardCurrentPrice = (sku: any) => {
+  const basePrice = Number(sku?.price_amount || 0)
+  const memberPrice = getMemberPriceForSku(normalizeSkuId(sku?.id))
+  const promoPrice = hasSkuPromotionPrice(sku) ? Number(getSkuPromotionPriceAmount(sku)) : basePrice
+  if (memberPrice !== null && memberPrice < promoPrice) return memberPrice
+  return promoPrice
+}
+
+const getSkuCardOriginalPrice = (sku: any) => {
+  const basePrice = Number(sku?.price_amount || 0)
+  const currentPrice = getSkuCardCurrentPrice(sku)
+  return currentPrice < basePrice ? basePrice : null
+}
 
 const normalizeStockNumber = (value: unknown) => {
   const numberValue = Number(value)
@@ -613,6 +705,69 @@ const images = computed(() => {
     imageArray = product.value.images.images
   }
   return imageArray.map(img => getImageUrl(img))
+})
+
+const heroDisplayImage = computed(() => {
+  return currentImage.value || images.value[0] || ''
+})
+
+const currentUnitPrice = computed(() => {
+  if (selectedSku.value) {
+    if (hasMemberPrice.value && selectedSkuMemberPrice.value !== null) {
+      const skuPromoPrice = hasSkuPromotionPrice(selectedSku.value)
+        ? Number(getSkuPromotionPriceAmount(selectedSku.value))
+        : Number(selectedSku.value.price_amount || 0)
+      if (selectedSkuMemberPrice.value < skuPromoPrice) return selectedSkuMemberPrice.value
+    }
+    if (hasSkuPromotionPrice(selectedSku.value)) return Number(getSkuPromotionPriceAmount(selectedSku.value))
+    return Number(selectedSku.value.price_amount || 0)
+  }
+  if (product.value && hasPromotionPrice(product.value)) {
+    return Number(getPromotionPriceAmount(product.value))
+  }
+  return Number(product.value?.price_amount || 0)
+})
+
+const currentOriginalUnitPrice = computed(() => {
+  if (selectedSku.value) {
+    const basePrice = Number(selectedSku.value.price_amount || 0)
+    return currentUnitPrice.value < basePrice ? basePrice : null
+  }
+  const basePrice = Number(product.value?.price_amount || 0)
+  return currentUnitPrice.value < basePrice ? basePrice : null
+})
+
+const summaryTotalPriceDisplay = computed(() => {
+  return formatPrice(currentUnitPrice.value * quantity.value, siteCurrency.value)
+})
+
+const summaryOriginalTotalPriceDisplay = computed(() => {
+  if (currentOriginalUnitPrice.value === null) return ''
+  return formatPrice(currentOriginalUnitPrice.value * quantity.value, siteCurrency.value)
+})
+
+const summaryPriceBadge = computed(() => {
+  if (selectedSku.value && hasMemberPrice.value) return t('products.memberPriceTag')
+  if ((selectedSku.value && hasSkuPromotionPrice(selectedSku.value)) || (!selectedSku.value && product.value && hasPromotionPrice(product.value))) {
+    return t('products.promotionTag')
+  }
+  return ''
+})
+
+const summaryPriceNote = computed(() => {
+  if (selectedSku.value) {
+    if (hasMemberPrice.value && selectedSkuMemberPrice.value !== null) {
+      return `${t('products.memberPriceTag')} · ${t('products.saveAmount')} ${formatPrice(Number(selectedSku.value.price_amount || 0) - selectedSkuMemberPrice.value, siteCurrency.value)}`
+    }
+    if (hasSkuPromotionPrice(selectedSku.value)) {
+      return `${t('products.saveAmount')} ${formatPrice(getSkuPromotionSaveAmount(selectedSku.value), siteCurrency.value)}`
+    }
+    return ''
+  }
+  if (product.value && hasPromotionPrice(product.value)) {
+    return `${t('products.saveAmount')} ${formatPrice(getPromotionSaveAmount(product.value), siteCurrency.value)}`
+  }
+  return ''
 })
 
 const skuDisplayText = (sku: any) => {
@@ -811,9 +966,6 @@ const loadProduct = async () => {
       currentImage.value = images.value[0] || ''
     }
     syncSelectedSku()
-    // Setup IntersectionObserver after product loads
-    await nextTick()
-    setupMobileBarObserver()
   } catch (error) {
     console.error('Failed to load product:', error)
     product.value = null
@@ -822,23 +974,6 @@ const loadProduct = async () => {
     loading.value = false
   }
 }
-
-const setupMobileBarObserver = () => {
-  if (observer) observer.disconnect()
-  if (!purchaseActionsRef.value) return
-  observer = new IntersectionObserver(
-    (entries) => {
-      const entry = entries[0]
-      if (entry) {
-        showMobileBar.value = !entry.isIntersecting
-      }
-    },
-    { threshold: 0.1 }
-  )
-  observer.observe(purchaseActionsRef.value)
-}
-
-const debouncedLoadProduct = debounceAsync(loadProduct, 300)
 
 const canonicalUrl = computed(() => {
   if (!product.value?.slug) return ''
@@ -938,14 +1073,6 @@ watch(
 watch(quantityEffectiveLimit, (limit) => {
   if (limit !== null && quantity.value > limit) {
     quantity.value = Math.max(1, limit)
-  }
-})
-
-onUnmounted(() => {
-  debouncedLoadProduct.cancel()
-  if (observer) {
-    observer.disconnect()
-    observer = null
   }
 })
 </script>

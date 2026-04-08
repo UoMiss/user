@@ -1,11 +1,16 @@
 <template>
   <div
-    class="product-card-shell group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-[1.5rem] transition-all duration-300 theme-slide-up"
+    class="product-card-shell group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-[1.2rem] transition-all duration-300 theme-slide-up"
     :class="isSoldOut(product)
       ? 'product-card-shell-sold opacity-60 grayscale-[0.12] saturate-[0.82] hover:-translate-y-0 hover:shadow-none'
       : 'product-card-shell-active hover:-translate-y-1.5'"
     :style="{ animationDelay: `${index * animationStep}ms` }"
-    @click="$emit('click', product.slug)"
+    role="link"
+    :tabindex="product?.slug ? 0 : -1"
+    :aria-label="getLocalizedText(product.title)"
+    @click="handleProductClick(product.slug)"
+    @keydown.enter.prevent="handleProductClick(product.slug)"
+    @keydown.space.prevent="handleProductClick(product.slug)"
   >
     <div class="product-card-media relative flex aspect-[16/10] shrink-0 items-center justify-center overflow-hidden transition-colors duration-500">
       <div v-if="isSoldOut(product)" class="absolute inset-0 z-10 bg-black/45"></div>
@@ -44,6 +49,16 @@
       </div>
 
       <div
+        v-if="getPromotionMediaLabel(product)"
+        class="absolute left-0 -top-1 z-20 max-w-[74%]"
+      >
+        <span class="product-card-promo-flag">
+          <MegaphoneIcon class="product-card-promo-flag-icon" aria-hidden="true" />
+          <span class="product-card-promo-flag-text truncate">{{ getPromotionMediaLabel(product) }}</span>
+        </span>
+      </div>
+
+      <div
         v-if="product.category?.name"
         class="absolute right-3 top-3 z-20 max-w-[70%]"
       >
@@ -55,19 +70,6 @@
 
     <div class="flex flex-1 flex-col gap-2.5 p-4">
       <div class="flex flex-wrap gap-1.5">
-        <span
-          v-if="hasPromotionPrice(product)"
-          class="theme-badge theme-badge-danger text-[10px] font-semibold"
-        >
-          {{ t('products.promotionTag') }}
-        </span>
-        <span
-          v-else-if="hasPromotionRules(product)"
-          class="theme-badge theme-badge-danger text-[10px] font-semibold"
-        >
-          {{ t('products.promotionBadge') }}
-        </span>
-
         <span
           v-if="product.purchase_type"
           class="theme-badge text-[10px] font-semibold"
@@ -159,7 +161,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
           </svg>
           <span class="overflow-hidden text-ellipsis whitespace-nowrap text-[10px] font-semibold theme-text-secondary sm:text-[11px]">
-            <span class="hidden sm:inline">{{ t('productDetail.fulfillmentLabel') }}: </span>
+            <span class="hidden sm:inline">{{ t('products.fulfillmentTypeLabel') }}: </span>
             <span
               class="font-bold text-indigo-600 dark:text-indigo-400"
               :class="isSoldOut(product) ? 'text-gray-500 dark:text-gray-500' : ''"
@@ -174,12 +176,14 @@
 </template>
 
 <script setup lang="ts">
+import { MegaphoneIcon } from '@heroicons/vue/24/outline'
 import { useI18n } from 'vue-i18n'
+import type { PublicProductLite } from '../api/types'
 import { getFirstImageUrl, getImageUrl } from '../utils/image'
 import { useLocalized, useProductLabels } from '../composables/useProduct'
 
 withDefaults(defineProps<{
-  product: any
+  product: PublicProductLite
   index?: number
   maxTags?: number
   animationStep?: number
@@ -189,9 +193,9 @@ withDefaults(defineProps<{
   animationStep: 50,
 })
 
-defineEmits<{
+const emit = defineEmits<{
   click: [slug: string]
-  quickBuy: [product: any]
+  quickBuy: [product: PublicProductLite]
 }>()
 
 const { t } = useI18n()
@@ -206,23 +210,34 @@ const {
   hasPromotionRules,
 } = useProductLabels()
 
-const getDisplayPriceAmount = (item: any) => {
+const handleProductClick = (slug?: string) => {
+  if (!slug) return
+  emit('click', slug)
+}
+
+const getDisplayPriceAmount = (item: PublicProductLite) => {
   return hasPromotionPrice(item) ? getPromotionPriceAmount(item) : item?.price_amount
 }
 
-const getStockTextColor = (status: string) => {
+const getPromotionMediaLabel = (item: PublicProductLite) => {
+  if (hasPromotionPrice(item)) return t('products.promotionTag')
+  if (hasPromotionRules(item)) return t('products.promotionBadge')
+  return ''
+}
+
+const getStockTextColor = (status?: string) => {
   if (status === 'out_of_stock') return 'text-gray-500 dark:text-gray-500'
   if (status === 'low_stock') return 'text-amber-600 dark:text-amber-400'
   return 'text-emerald-600 dark:text-emerald-400'
 }
 
-const getStockIconColor = (status: string) => {
+const getStockIconColor = (status?: string) => {
   if (status === 'out_of_stock') return 'text-gray-400 dark:text-gray-600'
   if (status === 'low_stock') return 'text-amber-500/60'
   return 'text-emerald-500/60'
 }
 
-const getPriceObj = (amount: any) => {
+const getPriceObj = (amount: string | number | null | undefined) => {
   const formatted = String(formatPrice(amount, siteCurrency?.value || siteCurrency))
   const match = formatted.match(/^([^\d.,\s]+)?\s*([\d.,]+)\s*([^\d.,\s]+)?$/)
 
@@ -253,6 +268,15 @@ const getPriceObj = (amount: any) => {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.6),
     0 24px 44px -32px rgba(15, 23, 42, 0.3);
+}
+
+.product-card-shell:focus-visible {
+  outline: none;
+  border-color: color-mix(in oklab, var(--ui-accent) 40%, var(--ui-border-strong));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.62),
+    0 0 0 3px color-mix(in oklab, var(--ui-accent) 18%, transparent),
+    0 24px 44px -32px rgba(15, 23, 42, 0.32);
 }
 
 .product-card-shell-sold {
@@ -289,6 +313,36 @@ const getPriceObj = (amount: any) => {
   color: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(10px);
   box-shadow: 0 8px 18px -16px rgba(15, 23, 42, 0.45);
+}
+
+.product-card-promo-flag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.32rem;
+  max-width: 100%;
+  min-height: 1.65rem;
+  padding: 0.28rem 0.86rem 0.28rem 0.68rem;
+  border-radius: 0 0 1rem 0;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 0.62rem) 100%, 0 100%);
+  background: linear-gradient(135deg, #ff4d6d 0%, #ff335f 100%);
+  color: #fff;
+  font-size: 0.66rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  box-shadow: 0 16px 28px -18px rgba(255, 51, 95, 0.52);
+}
+
+.product-card-promo-flag-icon {
+  width: 0.78rem;
+  height: 0.78rem;
+  flex-shrink: 0;
+  transform: translateY(1px);
+}
+
+.product-card-promo-flag-text {
+  transform: translateY(1px);
 }
 
 .product-card-title {
@@ -334,11 +388,24 @@ const getPriceObj = (amount: any) => {
     0 28px 50px -34px rgba(0, 0, 0, 0.82);
 }
 
+:global(.dark .product-card-shell:focus-visible) {
+  border-color: color-mix(in oklab, var(--ui-accent) 42%, var(--ui-border-strong));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 0 0 3px color-mix(in oklab, var(--ui-accent) 24%, transparent),
+    0 28px 50px -34px rgba(0, 0, 0, 0.82);
+}
+
 :global(.dark .product-card-category) {
   border-color: rgba(255, 255, 255, 0.12);
   background: color-mix(in oklab, var(--ui-bg-muted) 94%, black 6%);
   color: rgba(255, 255, 255, 0.94);
   backdrop-filter: none;
+}
+
+:global(.dark .product-card-promo-flag) {
+  background: linear-gradient(135deg, #ff4d6d 0%, #ff2d55 100%);
+  box-shadow: 0 18px 32px -20px rgba(255, 45, 85, 0.42);
 }
 
 :global(.dark .product-card-cta) {
@@ -349,6 +416,18 @@ const getPriceObj = (amount: any) => {
 @media (max-width: 767px) {
   .product-card-category {
     font-size: 9px;
+  }
+
+  .product-card-promo-flag {
+    min-height: 1.46rem;
+    padding: 0.24rem 0.68rem 0.24rem 0.56rem;
+    font-size: 0.6rem;
+    clip-path: polygon(0 0, 100% 0, calc(100% - 0.54rem) 100%, 0 100%);
+  }
+
+  .product-card-promo-flag-icon {
+    width: 0.72rem;
+    height: 0.72rem;
   }
 }
 </style>
