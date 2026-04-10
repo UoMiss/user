@@ -7,38 +7,49 @@
     leave-from-class="translate-y-0 opacity-100"
     leave-to-class="translate-y-full opacity-0">
     <div v-if="visible"
-      class="lg:hidden fixed bottom-0 left-0 right-0 z-40 theme-panel-strong backdrop-blur-xl border-t theme-border shadow-2xl theme-safe-bottom">
-      <div class="flex items-center gap-3 px-4 py-3">
-        <!-- Price -->
-        <div class="flex-1 min-w-0">
-          <span v-if="showMemberPrice" class="theme-price-sm text-amber-600 dark:text-amber-300 truncate block">
-            {{ memberPriceDisplay }}
+      class="lg:hidden fixed left-0 right-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom,0px))] z-50 theme-panel-strong backdrop-blur-xl border-t theme-border shadow-2xl">
+      <div
+        class="grid items-center gap-3 px-4 py-3"
+        :class="requiresLogin ? 'grid-cols-[auto_minmax(0,1fr)]' : 'grid-cols-[auto_minmax(0,1fr)_minmax(0,1.15fr)]'"
+      >
+        <div class="flex shrink-0 items-center overflow-hidden rounded-xl border theme-border bg-white/70 dark:bg-white/[0.03]">
+          <button
+            type="button"
+            class="flex h-11 w-10 items-center justify-center theme-text-secondary transition-colors hover:bg-gray-50 disabled:opacity-30 dark:hover:bg-white/5"
+            :disabled="!canDecrease"
+            @click="$emit('decrementQuantity')"
+          >
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+              <path stroke-linecap="round" d="M20 12H4" />
+            </svg>
+          </button>
+          <span class="flex h-11 min-w-[2.8rem] items-center justify-center border-x theme-border px-3 text-sm font-semibold theme-text-primary tabular-nums">
+            {{ quantity }}
           </span>
-          <span v-else-if="showSkuPromotionPrice" class="theme-price-sm text-rose-600 dark:text-rose-300 truncate block">
-            {{ skuPromotionPriceDisplay }}
-          </span>
-          <span v-else-if="showSkuPrice" class="theme-price-sm theme-text-accent truncate block">
-            {{ skuPriceDisplay }}
-          </span>
-          <span v-else-if="showProductPromotionPrice" class="theme-price-sm text-rose-600 dark:text-rose-300 truncate block">
-            {{ productPromotionPriceDisplay }}
-          </span>
-          <span v-else class="theme-price-sm theme-text-accent truncate block">
-            {{ productPriceDisplay }}
-          </span>
+          <button
+            type="button"
+            class="flex h-11 w-10 items-center justify-center theme-text-secondary transition-colors hover:bg-gray-50 disabled:opacity-30 dark:hover:bg-white/5"
+            :disabled="!canIncrease"
+            @click="$emit('incrementQuantity')"
+          >
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+              <path stroke-linecap="round" d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
         </div>
+
         <!-- Actions -->
         <button v-if="requiresLogin" @click="$emit('goLogin')"
-          class="px-5 py-3 theme-btn-primary font-bold rounded-xl text-sm min-h-[44px]">
+          class="min-w-0 px-5 py-3 theme-btn-primary font-bold rounded-xl text-sm min-h-[44px]">
           {{ t('productDetail.loginToBuy') }}
         </button>
         <template v-else>
           <button @click="$emit('addToCart')" :disabled="!canPurchase"
-            class="px-4 py-3 border theme-btn-secondary font-bold rounded-xl text-sm cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 min-h-[44px]">
+            class="min-w-0 px-4 py-3 border theme-btn-secondary font-bold rounded-xl text-sm cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 min-h-[44px]">
             {{ t('productDetail.addToCart') }}
           </button>
           <button @click="$emit('buyNow')" :disabled="!canPurchase"
-            class="px-5 py-3 theme-btn-primary font-bold rounded-xl text-sm cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 min-h-[44px]">
+            class="min-w-0 px-5 py-3 theme-btn-primary font-bold rounded-xl text-sm cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 min-h-[44px]">
             {{ t('productDetail.buyNow') }}
           </button>
         </template>
@@ -56,6 +67,9 @@ defineProps<{
   visible: boolean
   requiresLogin: boolean
   canPurchase: boolean
+  quantity: number
+  canDecrease: boolean
+  canIncrease: boolean
   showMemberPrice: boolean
   memberPriceDisplay: string
   showSkuPromotionPrice: boolean
@@ -71,5 +85,7 @@ defineEmits<{
   addToCart: []
   buyNow: []
   goLogin: []
+  decrementQuantity: []
+  incrementQuantity: []
 }>()
 </script>
